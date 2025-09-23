@@ -10,7 +10,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import { useRouter } from "@/i18n/navigation"
+import { useRouter } from "next/navigation"
 
 export function NavMain({
   items,

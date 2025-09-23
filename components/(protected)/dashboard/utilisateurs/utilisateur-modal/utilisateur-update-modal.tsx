@@ -21,12 +21,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import {
   UtilisateurRoleSchema,
   UtilisateurRoleDTO,
-} from "../../schema/utilisateur.schema";
-import { IUtilisateur, UtilisateurRole } from "../../types/utilisateur.type";
+} from "@/features/utilisateur/schema/utilisateur.schema";
+import { IUtilisateur, UtilisateurRole } from "@/features/utilisateur/types/utilisateur.type";
 import { getEnumValues } from "@/utils/getEnumValues";
 import { Button } from "@/components/ui/button";
-import { useModifierRoleMutation } from "../../queries/utilisateur.mutation";
-import { getUtilisateurRole } from "../../utils/getUtilisateurRole";
+import { useModifierProfilMutation } from "@/features/utilisateur/queries/utilisateur-update.mutation";
+import { getUtilisateurRole } from "@/features/utilisateur/utils/getUtilisateurRole";
 
 type Props = {
   isOpen: boolean;
@@ -39,8 +39,8 @@ export function UtilisateurUpdateModal({
   setIsOpen,
   utilisateur,
 }: Props) {
-  const { mutateAsync: modifierRoleMutation, isPending } =
-    useModifierRoleMutation();
+  const { mutateAsync: modifierProfilMutation, isPending } =
+    useModifierProfilMutation();
 
   const roleOptions = useMemo(() => getEnumValues(UtilisateurRole), []);
 
@@ -64,10 +64,10 @@ export function UtilisateurUpdateModal({
 
   const onSubmit = useCallback(
     async (data: UtilisateurRoleDTO) => {
-      await modifierRoleMutation({ id: utilisateur?.id || "", data });
+      await modifierProfilMutation({ id: utilisateur?.id || "", data });
       handleClose();
     },
-    [modifierRoleMutation, handleClose, utilisateur]
+    [modifierProfilMutation, handleClose, utilisateur]
   );
 
   useEffect(() => {

@@ -16,8 +16,8 @@ import {
   IUtilisateur,
   UtilisateurRole,
   UtilisateurStatus,
-} from "../../types/utilisateur.type";
-import { getUtilisateurRole } from "../../utils/getUtilisateurRole";
+} from "@/features/utilisateur/types/utilisateur.type";
+import { getUtilisateurRole } from "@/features/utilisateur/utils/getUtilisateurRole";
 
 // Adjust DataProps to be IUtilisateur directly
 export type DataProps = IUtilisateur;

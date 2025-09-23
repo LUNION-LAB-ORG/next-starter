@@ -22,12 +22,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import {
   UtilisateurAddDTO,
   UtilisateurAddSchema,
-} from "../../schema/utilisateur.schema";
-import { UtilisateurRole } from "../../types/utilisateur.type";
+} from "@/features/utilisateur/schema/utilisateur.schema";
+import { UtilisateurRole } from "@/features/utilisateur/types/utilisateur.type";
 import { getEnumValues } from "@/utils/getEnumValues";
 import { Button } from "@/components/ui/button"; // Assurez-vous que le chemin est correct pour Shadcn Button
-import { getUtilisateurRole } from "../../utils/getUtilisateurRole";
-import { useAjouterUtilisateurMutation } from "../../queries/utilisateur.mutation";
+import { getUtilisateurRole } from "@/features/utilisateur/utils/getUtilisateurRole";
+import { useAjouterUtilisateurMutation } from "@/features/utilisateur/queries/utilisateur-add.mutation";
 
 type Props = {
   isOpen: boolean;

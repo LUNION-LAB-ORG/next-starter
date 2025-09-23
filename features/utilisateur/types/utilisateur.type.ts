@@ -20,7 +20,7 @@ export interface IUtilisateur {
   isPasswordChangeRequired: boolean;
   createdAt: string;
   updatedAt: string;
-  deletedAt: string;
+  deletedAt: string | null;
 }
 
 export interface IUtilisateursParams {

@@ -19,7 +19,7 @@ export const utilisateurFiltersClient = {
         email: parseAsString.withDefault(''),
         phoneNumber: parseAsString.withDefault(''),
         page: parseAsInteger.withDefault(1),
-        limit: parseAsInteger.withDefault(10),
+        limit: parseAsInteger.withDefault(5),
     },
     option: {
         clearOnDefault: true,

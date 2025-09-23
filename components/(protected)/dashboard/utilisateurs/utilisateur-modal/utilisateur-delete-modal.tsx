@@ -9,8 +9,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { IUtilisateur } from "../../types/utilisateur.type";
-import { useSupprimerUtilisateurMutation } from "../../queries/utilisateur.mutation";
+import { IUtilisateur } from "@/features/utilisateur/types/utilisateur.type";
+import { useSupprimerUtilisateurMutation } from "@/features/utilisateur/queries/utilisateur-delete.mutation";
 import { Button } from "@/components/ui/button";
 
 type Props = {

@@ -11,14 +11,13 @@ import {
 } from "@/components/ui/table";
 import TablePagination from "./table-pagination";
 import { columns } from "./column";
-import { useUtilisateurListTable } from "../../hooks/useUtilisateurListTable";
+import { useUtilisateurListTable } from "@/features/utilisateur/hooks/useUtilisateurListTable";
 import { TableOptions } from "./table-options";
 import { Loader2 } from "lucide-react";
 import { TableIndicatorFetching } from "./table-indicator-fetching";
 import { UtilisateurUpdateModal } from "../utilisateur-modal/utilisateur-update-modal";
 import { UtilisateurAddModal } from "../utilisateur-modal/utilisateur-add-modal";
 import { UtilisateurDeleteModal } from "../utilisateur-modal/utilisateur-delete-modal";
-import { UtilisateurLockUnlockModal } from "../utilisateur-modal/utilisateur-lock-unlock-modal";
 
 export function UtilisateurList() {
   const {
@@ -143,11 +142,6 @@ export function UtilisateurList() {
           <UtilisateurDeleteModal
             isOpen={modalStates.deleteOpen}
             setIsOpen={modalHandlers.setDeleteOpen}
-            utilisateur={currentUser}
-          />
-          <UtilisateurLockUnlockModal
-            isOpen={modalStates.lockUnlockOpen}
-            setIsOpen={modalHandlers.setLockUnlockOpen}
             utilisateur={currentUser}
           />
         </>

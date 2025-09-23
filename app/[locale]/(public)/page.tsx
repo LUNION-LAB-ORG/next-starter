@@ -17,7 +17,7 @@ export default async function Home() {
     <Content>
       <div className="flex flex-col items-center justify-center gap-4">
         <div className="inline-block max-w-xl text-center justify-center mt-16">
-          <Title color="blue">{t("title")}</Title>
+          <Title>{t("title")}</Title>
           <Subtitle className="mt-4">{t("subtitle")}</Subtitle>
         </div>
 

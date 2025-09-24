@@ -1,17 +1,16 @@
 "use client";
 
-import { useCallback } from "react";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+  Button,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+} from "@heroui/react";
+import { useCallback } from "react";
 import { IUtilisateur } from "@/features/utilisateur/types/utilisateur.type";
 import { useSupprimerUtilisateurMutation } from "@/features/utilisateur/queries/utilisateur-delete.mutation";
-import { Button } from "@/components/ui/button";
 
 type Props = {
   isOpen: boolean;
@@ -32,45 +31,39 @@ export function UtilisateurDeleteModal({
       setIsOpen(false);
     }
   }, [isPending, setIsOpen]);
+
   const handleDelete = useCallback(async () => {
     await supprimerUtilisateurMutation({ id: utilisateur?.id || "" });
     handleClose();
   }, [supprimerUtilisateurMutation, handleClose, utilisateur]);
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogContent className="sm:max-w-[425px] rounded-2xl">
-        <DialogHeader>
-          <DialogTitle className="text-lg font-medium text-gray-900">
+    <Modal isOpen={isOpen} onOpenChange={setIsOpen}>
+      <ModalContent>
+        <ModalHeader className="flex flex-col gap-1">
+          <h1 className="text-lg font-medium text-primary">
             {`Supprimer ${utilisateur?.firstName} ${utilisateur?.lastName} ?`}
-          </DialogTitle>
-          <DialogDescription className="text-sm text-gray-500">
+          </h1>
+          <p className="text-sm text-gray-500">
             Êtes-vous sûr de vouloir supprimer cet utilisateur ? Cet utilisateur
             sera banni de l&apos;application.
-          </DialogDescription>
-        </DialogHeader>
-        <DialogFooter className="flex justify-end gap-3 pt-4">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={handleClose}
-            disabled={isPending}
-            className="px-4 py-2 text-sm text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50"
-          >
+          </p>
+        </ModalHeader>
+        <ModalBody />
+        <ModalFooter>
+          <Button color="danger" variant="light" onPress={handleClose} disabled={isPending}>
             Annuler
           </Button>
-          {/* Bouton Supprimer */}
           <Button
-            type="button"
-            variant="destructive"
-            onClick={handleDelete}
+            color="danger"
+            onPress={handleDelete}
+            isLoading={isPending}
             disabled={isPending}
-            className="px-4 py-2 text-sm text-white bg-red-600 rounded-md hover:bg-red-700 disabled:opacity-50"
           >
-            {isPending ? "Suppression..." : "Supprimer"}
+            Supprimer
           </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
   );
 }

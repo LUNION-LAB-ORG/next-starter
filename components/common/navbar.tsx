@@ -16,19 +16,17 @@ import clsx from "clsx";
 import NextLink from "next/link";
 
 import {
-  DiscordIcon,
   GithubIcon,
   Logo,
-  SearchIcon,
-  TwitterIcon,
+  SearchIcon
 } from "@/components/icons";
 import { ThemeSwitch } from "@/components/theme-switch";
 import { siteConfig } from "@/config/site";
-import { LogInIcon, LogOutIcon } from "lucide-react";
-import LocaleSwitcher from "../locale-switch";
-import { auth } from "@/lib/auth";
 import { logout } from "@/features/auth/actions/auth.action";
+import { auth } from "@/lib/auth";
+import { LogInIcon, LogOutIcon } from "lucide-react";
 import { getTranslations } from "next-intl/server";
+import LocaleSwitcher from "../locale-switch";
 
 export const Navbar = async () => {
   const t = await getTranslations("partials.navbar");

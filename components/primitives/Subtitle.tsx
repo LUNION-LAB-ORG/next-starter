@@ -5,8 +5,8 @@ export const subtitleStyle = tv({
   base: "w-full md:w-1/2 my-2 text-default-600 block max-w-full font-semibold",
   variants: {
     size: {
-      sm: "text-base lg:text-lg",
-      md: "text-lg lg:text-xl",
+      sm: "text-sm lg:text-lg",
+      md: "text-base lg:text-xl",
       lg: "text-xl lg:text-2xl",
     },
     fullWidth: {
@@ -33,8 +33,8 @@ export default function Subtitle({
   ...props
 }: SubtitleProps) {
   return (
-    <h3 className={subtitleStyle({ fullWidth, size, className })} {...props}>
+    <p className={subtitleStyle({ fullWidth, size, className })} {...props}>
       {children}
-    </h3>
+    </p>
   );
 }

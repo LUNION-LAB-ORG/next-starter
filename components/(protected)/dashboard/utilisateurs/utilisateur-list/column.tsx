@@ -1,53 +1,35 @@
-import { ColumnDef } from "@tanstack/react-table";
-import { Lock, LockOpen, SquarePen, Trash2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+"use client";
 
-// Import IUtilisateur and UtilisateurRole from your types
+import { ColumnDef } from "@tanstack/react-table";
+import { SquarePen, Trash2 } from "lucide-react";
+
 import {
   IUtilisateur,
   UtilisateurRole,
   UtilisateurStatus,
 } from "@/features/utilisateur/types/utilisateur.type";
 import { getUtilisateurRole } from "@/features/utilisateur/utils/getUtilisateurRole";
+import { getUtilisateurStatus } from "@/features/utilisateur/utils/getUtilisateurStatus";
+import { Button, Chip, Tooltip, User } from "@heroui/react";
 
-// Adjust DataProps to be IUtilisateur directly
-export type DataProps = IUtilisateur;
-
-export const columns: ColumnDef<DataProps>[] = [
+export const columns: ColumnDef<IUtilisateur>[] = [
   {
-    accessorKey: "firstName", // Changed to firstName as per IUtilisateur
+    accessorKey: "firstName",
     header: "Nom Complet",
     cell: ({ row }) => {
-      const user = row.original; // row.original is now of type IUtilisateur
+      const user = row.original;
       return (
-        <div className="flex gap-3 items-center font-medium text-card-foreground/80">
-          <Avatar className="w-8 h-8">
-            <AvatarFallback>
-              {user.firstName ? user.firstName.charAt(0) : ""}
-              {user.lastName ? user.lastName.charAt(0) : ""}
-            </AvatarFallback>
-          </Avatar>
-          <span className="text-sm text-default-600">{`${user.firstName} ${user.lastName}`}</span>
-        </div>
+        <User name={`${user.firstName} ${user.lastName}`}>{user.email}</User>
       );
     },
   },
   {
-    accessorKey: "email", // Add email as a column
+    accessorKey: "email",
     header: "Email",
     cell: ({ row }) => <span>{row.getValue("email")}</span>,
   },
   {
-    accessorKey: "phoneNumber", // Add phoneNumber as a column
+    accessorKey: "phoneNumber",
     header: "Téléphone",
     cell: ({ row }) => <span>{row.getValue("phoneNumber")}</span>,
   },
@@ -55,63 +37,36 @@ export const columns: ColumnDef<DataProps>[] = [
     accessorKey: "role",
     header: "Rôle",
     cell: ({ row }) => {
-      // The role is a number from the enum, so we convert it to string
       const role = row.getValue<UtilisateurRole>("role");
-      // Map numeric role to string for display and color
       const roleName = getUtilisateurRole(role) || "Inconnu";
 
-      const statusColors: Record<string, string> = {
-        [UtilisateurRole.ADMIN]: "bg-green-100 text-green-600",
-        [UtilisateurRole.AGENT]: "bg-yellow-100 text-yellow-700",
-        default: "bg-muted text-muted-foreground",
-      };
-
-      const roleStyles = statusColors[role] || statusColors.default;
-
       return (
-        <Badge
-          className={cn(
-            "rounded-full px-4 py-1 text-xs capitalize",
-            roleStyles
-          )}
+        <Chip
+          className="capitalize"
+          color={roleName.color}
+          size="sm"
+          variant="flat"
         >
-          {roleName} {/* Display friendly name */}
-        </Badge>
+          {roleName.label}
+        </Chip>
       );
     },
   },
   {
-    accessorKey: "status", // Add status as a column
+    accessorKey: "status",
     header: "Statut",
     cell: ({ row }) => {
-      const status = row.getValue<UtilisateurStatus>("status"); // Status is a number enum
-      const statusName =
-        status === UtilisateurStatus.ACTIVE
-          ? "actif"
-          : status === UtilisateurStatus.INACTIVE
-          ? "verrouillé"
-          : status === UtilisateurStatus.DELETED
-          ? "banni"
-          : "inconnu"; // Directly mapping for simplicity, adjust if more statuses
-
-      const statusColors: Record<string, string> = {
-        actif: "bg-green-100 text-green-600",
-        verrouillé: "bg-yellow-100 text-yellow-600",
-        banni: "bg-red-100 text-red-600",
-        default: "bg-muted text-muted-foreground",
-      };
-
-      const statusStyles = statusColors[statusName] || statusColors.default;
-
+      const status = row.getValue<UtilisateurStatus>("status");
+      const statusName = getUtilisateurStatus(status) || "Inconnu";
       return (
-        <Badge
-          className={cn(
-            "rounded-full px-4 py-1 text-xs capitalize",
-            statusStyles
-          )}
+        <Chip
+          className="capitalize"
+          color={statusName.color}
+          size="sm"
+          variant="flat"
         >
-          {statusName}
-        </Badge>
+          {statusName.label}
+        </Chip>
       );
     },
   },
@@ -120,92 +75,38 @@ export const columns: ColumnDef<DataProps>[] = [
     header: "Actions",
     enableHiding: false,
     cell: ({ row, table }) => {
-      const user = row.original as DataProps;
-      
+      const user = row.original as IUtilisateur;
+
       const meta = table.options.meta as {
-        onView: (user: DataProps) => void;
-        onEdit: (user: DataProps) => void;
-        onDelete: (user: DataProps) => void;
-        onLockUnlock: (user: DataProps) => void;
+        onView: (user: IUtilisateur) => void;
+        onEdit: (user: IUtilisateur) => void;
+        onDelete: (user: IUtilisateur) => void;
+        onLockUnlock: (user: IUtilisateur) => void;
       };
 
-      if (user.status === UtilisateurStatus.DELETED) {
-        return (
-          <div className="flex gap-2">
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={() => meta.onLockUnlock(user)}
-                    className="w-7 h-7"
-                  >
-                    <LockOpen className="w-4 h-4" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>Activer</TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          </div>
-        );
-      }
       return (
-        <div className="flex gap-2">
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={() => meta.onEdit(user)}
-                  className="w-7 h-7"
-                >
-                  <SquarePen className="w-3 h-3" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>Modifier</TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+        <div className="relative flex items-center gap-2">
+          <Tooltip content="Activer">
+            <Button
+              variant="bordered"
+              isIconOnly
+              onPress={() => meta.onEdit(user)}
+              size="sm"
+            >
+              <SquarePen className="w-4 h-4" />
+            </Button>
+          </Tooltip>
 
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={() => meta.onDelete(user)}
-                  className="w-7 h-7"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>Supprimer</TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={() => meta.onLockUnlock(user)}
-                  className="w-7 h-7"
-                >
-                  {user.status === UtilisateurStatus.ACTIVE ? (
-                    <Lock className="w-4 h-4" />
-                  ) : (
-                    <LockOpen className="w-4 h-4" />
-                  )}
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                {user.status === UtilisateurStatus.ACTIVE
-                  ? "Verrouiller"
-                  : "Activer"}
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <Tooltip content="Supprimer">
+            <Button
+              variant="bordered"
+              isIconOnly
+              onPress={() => meta.onDelete(user)}
+              size="sm"
+            >
+              <Trash2 className="w-4 h-4" />
+            </Button>
+          </Tooltip>
         </div>
       );
     },

@@ -10,7 +10,6 @@ import {
 import { useQueryStates } from 'nuqs';
 import { utilisateurFiltersClient } from '../filters/utilisateur.filters';
 import { useUtilisateursListQuery } from "../queries/utilisateur-list.query";
-import { DataProps } from '@/components/(protected)/dashboard/utilisateurs/utilisateur-list/column';
 import { IUtilisateur, IUtilisateursParams } from "../types/utilisateur.type";
 
 export interface IUtilisateurListTableProps {
@@ -41,7 +40,7 @@ export function useUtilisateurListTable({ columns }: IUtilisateurListTableProps)
     }, [filters]);
 
     // Récupération des données avec options React Query optimisées
-    const { data, isLoading, isError, error, isFetching } = useUtilisateursListQuery(currentSearchParams);
+    const { data, isLoading, isError, isFetching } = useUtilisateursListQuery(currentSearchParams);
 
     const users = data?.data || [];
     const totalPages = data?.meta?.totalPages || 1;
@@ -51,19 +50,19 @@ export function useUtilisateurListTable({ columns }: IUtilisateurListTableProps)
     const [editOpen, setEditOpen] = useState(false);
     const [deleteOpen, setDeleteOpen] = useState(false);
     const [lockUnlockOpen, setLockUnlockOpen] = useState(false);
-    const [currentUser, setCurrentUser] = useState<DataProps | null>(null);
+    const [currentUser, setCurrentUser] = useState<IUtilisateur | null>(null);
 
-    const handleLockUnlockUser = useCallback((user: DataProps) => {
+    const handleLockUnlockUser = useCallback((user: IUtilisateur) => {
         setCurrentUser(user);
         setLockUnlockOpen(true);
     }, []);
 
-    const handleEditUser = useCallback((user: DataProps) => {
+    const handleEditUser = useCallback((user: IUtilisateur) => {
         setCurrentUser(user);
         setEditOpen(true);
     }, []);
 
-    const handleDeleteUser = useCallback((user: DataProps) => {
+    const handleDeleteUser = useCallback((user: IUtilisateur) => {
         setCurrentUser(user);
         setDeleteOpen(true);
     }, []);
@@ -93,7 +92,7 @@ export function useUtilisateurListTable({ columns }: IUtilisateurListTableProps)
     ) => {
         setFilters(prev => ({
             ...prev,
-            [filterName]: value === "_all_" ? "" : value,
+            [filterName]: value,
             page: 1,
         }));
     }, [setFilters]);
@@ -137,7 +136,6 @@ export function useUtilisateurListTable({ columns }: IUtilisateurListTableProps)
         table,
         isLoading,
         isError,
-        error,
         isFetching,
         handleTextFilterChange,
         handleEnumFilterChange,

@@ -97,6 +97,8 @@ const LoginForm = () => {
             disabled={isPending}
             fullWidth
             isLoading={isPending}
+            isDisabled={isPending}
+            color="primary"
           >
             {isPending ? t("signing_in") : t("sign_in")}
           </Button>

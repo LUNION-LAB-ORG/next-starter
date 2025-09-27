@@ -47,6 +47,7 @@ interface TitleProps extends React.HTMLAttributes<HTMLHeadingElement> {
   color?: keyof typeof titleStyle.variants.color;
   size?: keyof typeof titleStyle.variants.size;
   fullWidth?: boolean;
+  level?: 1 | 2 | 3 | 4 | 5 | 6;
   children?: React.ReactNode;
 }
 
@@ -56,11 +57,17 @@ export default function Title({
   fullWidth,
   children,
   className,
+  level = 1,
   ...props
 }: TitleProps) {
-  return (
-    <h1 className={titleStyle({ color, size, fullWidth, className })} {...props}>
-      {children}
-    </h1>
+  const Tag = `h${level}` as keyof JSX.IntrinsicElements;
+
+  return React.createElement(
+    Tag,
+    {
+      className: titleStyle({ color, size, fullWidth, className }),
+      ...props,
+    },
+    children
   );
 }

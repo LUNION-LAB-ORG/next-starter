@@ -1,30 +1,28 @@
 "use client";
 
-import { flexRender } from "@tanstack/react-table";
+import Content from "@/components/primitives/Content";
+import { useUtilisateurListTable } from "@/features/utilisateur/hooks/useUtilisateurListTable";
 import {
+  Pagination,
   Table,
   TableBody,
   TableCell,
-  TableHead,
+  TableColumn,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import TablePagination from "./table-pagination";
-import { columns } from "./column";
-import { useUtilisateurListTable } from "@/features/utilisateur/hooks/useUtilisateurListTable";
-import { TableOptions } from "./table-options";
-import { Loader2 } from "lucide-react";
-import { TableIndicatorFetching } from "./table-indicator-fetching";
-import { UtilisateurUpdateModal } from "../utilisateur-modal/utilisateur-update-modal";
+} from "@heroui/react";
+import { flexRender } from "@tanstack/react-table";
 import { UtilisateurAddModal } from "../utilisateur-modal/utilisateur-add-modal";
 import { UtilisateurDeleteModal } from "../utilisateur-modal/utilisateur-delete-modal";
+import { UtilisateurUpdateModal } from "../utilisateur-modal/utilisateur-update-modal";
+import { columns } from "./column";
+import { HeaderFilter } from "./header-filter";
 
 export function UtilisateurList() {
   const {
     table,
     isLoading,
     isError,
-    error,
     isFetching,
     handleTextFilterChange,
     handleEnumFilterChange,
@@ -35,96 +33,70 @@ export function UtilisateurList() {
   } = useUtilisateurListTable({ columns });
 
   return (
-    <div className="w-full">
-      <TableOptions
+    <Content>
+      <HeaderFilter
         handleTextFilterChange={handleTextFilterChange}
         handleEnumFilterChange={handleEnumFilterChange}
-        modalHandlers={modalHandlers}
         filters={filters}
+        modalHandlers={modalHandlers}
       />
-
-      {/* Indicateur de chargement global */}
       <div className="relative">
-        <TableIndicatorFetching isFetching={isFetching} />
-
-        <Table>
-          <TableHeader className="bg-default-200">
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <TableHead key={header.id}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                  </TableHead>
-                ))}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {isLoading ? (
-              // État de chargement initial
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
-                  <div className="flex items-center justify-center">
-                    <Loader2 className="h-6 w-6 animate-spin mr-2" />
-                    Chargement des données...
-                  </div>
-                </TableCell>
-              </TableRow>
-            ) : isError ? (
-              // État d'erreur
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
-                  <div className="text-destructive">
-                    Erreur lors du chargement des données
-                    {error?.message && `: ${error.message}`}
-                  </div>
-                </TableCell>
-              </TableRow>
-            ) : table.getRowModel().rows?.length ? (
-              // Données chargées
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                  className={isFetching ? "opacity-70" : ""}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
+        <Table
+          classNames={{
+            wrapper: isFetching
+              ? "opacity-50 bg-primary-50/50 transition-opacity duration-200"
+              : "",
+            table: isFetching ? "pointer-events-none" : "",
+          }}
+          bottomContent={
+            <div className="flex w-full justify-center">
+              <Pagination
+                isCompact
+                showControls
+                showShadow
+                page={table.getState().pagination.pageIndex + 1}
+                total={table.getPageCount()}
+                onChange={(page) => table.setPageIndex(page - 1)}
+              />
+            </div>
+          }
+          aria-label="Tableau des utilisateurs"
+        >
+          <TableHeader>
+            {table
+              .getHeaderGroups()[0]
+              ?.headers.map((header) => (
+                <TableColumn key={header.id}>
+                  {header.isPlaceholder
+                    ? null
+                    : flexRender(
+                        header.column.columnDef.header,
+                        header.getContext()
                       )}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
-            ) : (
-              // Aucun résultat
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
-                  Aucun résultat trouvé
-                </TableCell>
+                </TableColumn>
+              )) || []}
+          </TableHeader>
+          <TableBody
+            items={
+              isLoading || isError || !table.getRowModel().rows?.length
+                ? []
+                : table.getRowModel().rows
+            }
+            loadingContent="Chargement..."
+            emptyContent="Aucun résultat trouvé"
+          >
+            {(row) => (
+              <TableRow key={row.id} className={isFetching ? "opacity-70" : ""}>
+                {row.getVisibleCells().map((cell) => (
+                  <TableCell key={cell.id}>
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </TableCell>
+                ))}
               </TableRow>
             )}
           </TableBody>
         </Table>
       </div>
-
-      <TablePagination table={table} />
 
       {/* Modales - décommentez quand prêtes */}
       <UtilisateurAddModal
@@ -146,6 +118,6 @@ export function UtilisateurList() {
           />
         </>
       )}
-    </div>
+    </Content>
   );
 }

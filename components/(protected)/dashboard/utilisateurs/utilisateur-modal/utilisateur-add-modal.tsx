@@ -91,6 +91,7 @@ export function UtilisateurAddModal({ isOpen, setIsOpen }: Props) {
               isInvalid={!!errors.firstName}
               disabled={isPending}
               placeholder="Entrer le prénom"
+              variant="bordered"
               type="text"
             />
             <Input
@@ -99,6 +100,7 @@ export function UtilisateurAddModal({ isOpen, setIsOpen }: Props) {
               isInvalid={!!errors.lastName}
               disabled={isPending}
               placeholder="Entrer le nom"
+              variant="bordered"
               type="text"
             />
             <Input
@@ -107,6 +109,7 @@ export function UtilisateurAddModal({ isOpen, setIsOpen }: Props) {
               isInvalid={!!errors.email}
               disabled={isPending}
               placeholder="Entrer l'email"
+              variant="bordered"
               type="email"
             />
             <Input
@@ -115,6 +118,7 @@ export function UtilisateurAddModal({ isOpen, setIsOpen }: Props) {
               isInvalid={!!errors.phoneNumber}
               disabled={isPending}
               placeholder="Entrer le téléphone"
+              variant="bordered"
               type="tel"
             />
             <Select
@@ -124,9 +128,10 @@ export function UtilisateurAddModal({ isOpen, setIsOpen }: Props) {
               isInvalid={!!errors.role}
               disabled={isPending}
               placeholder="Choisir un rôle"
+              variant="bordered"
             >
               {roleOptions.map((role) => (
-                <SelectItem key={role}>{getUtilisateurRole(role)}</SelectItem>
+                <SelectItem key={role}>{getUtilisateurRole(role).label}</SelectItem>
               ))}
             </Select>
           </ModalBody>

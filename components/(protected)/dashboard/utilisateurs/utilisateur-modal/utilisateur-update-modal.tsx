@@ -17,7 +17,10 @@ import {
   UtilisateurRoleSchema,
   UtilisateurRoleDTO,
 } from "@/features/utilisateur/schema/utilisateur.schema";
-import { IUtilisateur, UtilisateurRole } from "@/features/utilisateur/types/utilisateur.type";
+import {
+  IUtilisateur,
+  UtilisateurRole,
+} from "@/features/utilisateur/types/utilisateur.type";
 import { getEnumValues } from "@/utils/getEnumValues";
 import { useModifierProfilMutation } from "@/features/utilisateur/queries/utilisateur-update.mutation";
 import { getUtilisateurRole } from "@/features/utilisateur/utils/getUtilisateurRole";
@@ -105,9 +108,10 @@ export function UtilisateurUpdateModal({
               isInvalid={!!errors.role}
               disabled={isPending}
               placeholder="Choisir un rôle"
+              variant="bordered"
             >
               {roleOptions.map((role) => (
-                <SelectItem key={role}>{getUtilisateurRole(role)}</SelectItem>
+                <SelectItem key={role}>{getUtilisateurRole(role).label}</SelectItem>
               ))}
             </Select>
           </ModalBody>

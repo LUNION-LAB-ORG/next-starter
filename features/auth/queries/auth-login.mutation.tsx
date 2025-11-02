@@ -51,7 +51,7 @@ export const useLoginMutation = () => {
     onError: async (error) => {
       console.log("error query", error);
       addToast({
-        title: "Erreur lors de la connexion:",
+        title: "Erreur lors de la connexion dans la mutation:",
         description: error.message,
         icon: <X />,
         promise: Promise.reject(error),

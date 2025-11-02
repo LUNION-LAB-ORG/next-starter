@@ -8,9 +8,7 @@ import { authAPI } from "../apis/auth.api";
 import { ActionResponse } from "@/types/api.type";
 import { handleServerActionError } from "@/utils/handleServerActionError";
 
-export async function login(
-  formdata: LoginDTO
-): Promise<ActionResponse<void>> {
+export async function login(formdata: LoginDTO): Promise<ActionResponse<void>> {
   // Validation des données
   const result = processAndValidateFormData(loginSchema, formdata, {
     outputFormat: "object",
@@ -24,6 +22,7 @@ export async function login(
   }
   // 1️⃣ Premier essai avec Auth.js pour la gestion de session
   try {
+    // Requête via next-auth afin de gérer la session en la stocker dans les cookies
     await signIn("credentials", {
       ...result.data,
       redirect: false,
@@ -36,8 +35,9 @@ export async function login(
   } catch (error) {
     // 2️⃣ Si Auth.js échoue, on essaie directement l'API pour avoir la vraie réponse
     try {
-      await authAPI.login(result.data as LoginDTO);
-
+      // Requête direct au backend, si la requête échoue une exception est levée
+      const resp = await authAPI.login(result.data as LoginDTO);
+      console.log({ "Réponse directe backend": resp });
       await signIn("credentials", {
         ...result.data,
         redirect: false,

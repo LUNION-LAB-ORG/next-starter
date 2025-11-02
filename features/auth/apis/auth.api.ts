@@ -10,7 +10,7 @@ export interface IAuthAPI {
 export const authAPI: IAuthAPI = {
   login(data: LoginDTO): Promise<ILoginResponse> {
     return api.request<ILoginResponse>({
-      endpoint: `/auth/signin`,
+      endpoint: `/auth/login`,
       method: "POST",
       data,
       service: "public"

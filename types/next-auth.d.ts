@@ -7,9 +7,9 @@ declare module "next-auth" {
       email: string;
       name: string;
       role: UserRole;
-      status: UserStatus;
-      isPasswordChangeRequired: boolean;
-      accessToken: string;
+     photoBucket:string;
+     photoKey:string;
+      token: string;
       refreshToken?: string;
     } & DefaultSession["user"];
     error?: string;
@@ -20,9 +20,9 @@ declare module "next-auth" {
     email: string;
     name: string;
     role: UserRole;
-    status: UserStatus;
-    isPasswordChangeRequired: boolean;
-    accessToken: string;
+    photoBucket:string;
+     photoKey:string;
+    token: string;
     refreshToken?: string;
   }
 }
@@ -33,9 +33,9 @@ declare module "next-auth/jwt" {
     email: string;
     name: string;
     role: UserRole;
-    status: UserStatus;
-    isPasswordChangeRequired: boolean;
-    accessToken: string;
+    photoBucket:string;
+     photoKey:string;
+    token: string;
     refreshToken?: string;
     accessTokenExpires: number;
     refreshTokenExpires: number;

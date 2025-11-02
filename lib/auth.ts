@@ -27,15 +27,15 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             email: credentials.email.toString(),
             password: credentials.password.toString(),
           });
-
+          console.log("Réponse de l'API d'authentification :", response);
           return {
-            id: response.user.id,
-            email: response.user.email,
-            name: response.user.firstName + " " + response.user.lastName,
-            role: response.user.role,
-            status: response.user.status,
-            isPasswordChangeRequired: response.user.isPasswordChangeRequired,
-            accessToken: response.accessToken,
+            id: response.id,
+            email: response.email,
+            name: response.fullname,
+            role: response.role,
+            photoBucket: response.photoBucket,
+            photoKey: response.photoKey,
+            token: response.token,
             refreshToken: response.refreshToken,
           };
         } catch (error) {
@@ -59,12 +59,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           email: user.email,
           name: user.name,
           role: user.role,
-          status: user.status,
-          isPasswordChangeRequired: user.isPasswordChangeRequired,
-          accessToken: user.accessToken,
+          photoBucket:user.photoBucket,
+          photoKey:user.photoKey,
+          token: user.token,
           refreshToken: user.refreshToken,
-          accessTokenExpires: Date.now() + 1000 * 60 * 60 * 24 * 7, // 7 jour 
-          refreshTokenExpires: Date.now() + 1000 * 60 * 60 * 24 * 30, // 30 jour 
+          accessTokenExpires: Date.now() + 1000 * 60 * 60 * 24 * 30, // 30 jour
+          refreshTokenExpires: Date.now() + 1000 * 60 * 60 * 24 * 365, // 1 an
         } as JWT;
       }
       if (token.accessTokenExpires && Date.now() < token.accessTokenExpires) {
@@ -80,10 +80,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           name: token.name,
           email: token.email,
           role: token.role,
-          status: token.status,
-          isPasswordChangeRequired: token.isPasswordChangeRequired,
-          accessToken: token.accessToken,
+          photokey:token.photoKey,
+          photobucket:token.photoBucket,
+          token: token.token,
           refreshToken: token.refreshToken,
+          
         };
       }
       if (token.error) {
@@ -104,8 +105,8 @@ async function refreshAccessToken(token: JWT): Promise<JWT> {
     console.log("Rafraîchissement du jeton d'accès réussi :", response);
     return {
       ...token,
-      accessToken: response.accessToken,
-      accessTokenExpires: Date.now() + 1000 * 60 * 60 * 24 * 7, // 7 jour 
+      token: response.token,
+      accessTokenExpires: Date.now() + 1000 * 60 * 60 * 24 * 30, // 30 jours
     };
   } catch (error) {
     console.error("Erreur lors du rafraîchissement du jeton d'accès :", error);

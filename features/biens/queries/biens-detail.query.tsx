@@ -4,19 +4,19 @@ import getQueryClient from "@/lib/get-query-client";
 import { addToast } from "@heroui/toast";
 import { useQuery } from "@tanstack/react-query";
 import { X } from "lucide-react";
-import { obtenirUnUtilisateurAction } from "../actions/utilisateur.action";
-import { utilisateurKeyQuery } from "./index.query";
+import { obtenirUnBiensAction } from "../actions/biens.action";
+import { biensKeyQuery } from "./index.query";
 
 const queryClient = getQueryClient();
 
 //1- Option de requête
-export const utilisateurQueryOption = (id: string) => {
+export const biensQueryOption = (id: string) => {
   return {
-    queryKey: utilisateurKeyQuery("detail", id),
+    queryKey: biensKeyQuery("detail", id),
     queryFn: async () => {
-      if (!id) throw new Error("L'identifiant utilisateur est requis");
+      if (!id) throw new Error("L'identifiant du biens est requis");
 
-      const result = await obtenirUnUtilisateurAction(id);
+      const result = await obtenirUnBiensAction(id);
 
       if (!result.success) {
         throw new Error(result.error);
@@ -29,14 +29,14 @@ export const utilisateurQueryOption = (id: string) => {
 };
 
 //2- Hook pour récupérer un utilisateur
-export const useUtilisateurQuery = (id: string) => {
-  const query = useQuery(utilisateurQueryOption(id));
+export const useBiensQuery = (id: string) => {
+  const query = useQuery(biensQueryOption(id));
 
   // Gestion des erreurs dans le hook
   React.useEffect(() => {
     if (query.isError && query.error) {
       addToast({
-        title: "Erreur lors de la récupération de l'utilisateur:",
+        title: "Erreur lors de la récupération du bien:",
         description:
           query.error instanceof Error
             ? query.error.message
@@ -51,6 +51,6 @@ export const useUtilisateurQuery = (id: string) => {
 };
 
 //3- Fonction pour précharger un utilisateur
-export const prefetchUtilisateurQuery = (id: string) => {
-  return queryClient.prefetchQuery(utilisateurQueryOption(id));
+export const prefetchBiensQuery = (id: string) => {
+  return queryClient.prefetchQuery(biensQueryOption(id));
 };

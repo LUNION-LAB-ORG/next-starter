@@ -1,11 +1,21 @@
-import { IUtilisateur } from "@/features/utilisateur/types/utilisateur.type";
+import { IUtilisateur, UtilisateurRole } from "@/features/utilisateur/types/utilisateur.type";
 
 export interface ILoginResponse {
-  user: IUtilisateur;
-  accessToken: string;
+  id :string;
+  fullname: string;
+  phone: string;
+  email: string;
+  role:UtilisateurRole;
+ photoBucket:string;
+photoKey:string;
+ address: string;
+ createdAt:string;
+ updatedAt :string;
+  token: string;
   refreshToken: string;
+  deletedAt?: string|null;
 }
 
 export interface IRefreshTokenResponse {
-  accessToken: string;
+  token: string;
 }

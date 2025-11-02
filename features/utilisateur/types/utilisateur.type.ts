@@ -9,20 +9,6 @@ export enum UtilisateurStatus {
   DELETED = "DELETED",
 }
 
-export interface IUtilisateur {
-  id: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-  phoneNumber: string;
-  role: UtilisateurRole;
-  status: UtilisateurStatus;
-  isPasswordChangeRequired: boolean;
-  createdAt: string;
-  updatedAt: string;
-  deletedAt: string | null;
-}
-
 export interface IUtilisateursParams {
   status?: UtilisateurStatus;
   role?: UtilisateurRole;
@@ -34,9 +20,26 @@ export interface IUtilisateursParams {
   limit?: number;
 }
 
+export interface IUtilisateur {
+ id :string;
+  fullname: string;
+  phone: string;
+  email: string;
+  role:UtilisateurRole;
+ photoBucket:string;
+photoKey:string;
+ address: string;
+ createdAt:string;
+ updatedAt :string;
+  token: string;
+  refreshToken: string;
+  deletedAt?: string|null;
+}
+
+
 export interface IUtilisateurAddUpdateResponse extends Pick<IUtilisateur,
-  'id' | 'email' | 'firstName' | 'lastName' | 'phoneNumber' | 'role' | 'status'
-  | 'createdAt' | 'updatedAt' | 'deletedAt' | 'isPasswordChangeRequired'> {
+  'id' | 'email' | 'fullname' | 'role' | 
+   'createdAt' | 'updatedAt' | 'deletedAt'> {
   generatedPassword: string
 }
 

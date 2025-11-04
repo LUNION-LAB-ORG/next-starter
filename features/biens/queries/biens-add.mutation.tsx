@@ -14,12 +14,10 @@ export const useAjouterBiensMutation = () => {
     mutationFn: async (data: BiensAddDTO) => {
       // Validation des données
       const validation = processAndValidateFormData(BiensAddSchema, data, {
-        outputFormat: 'object',
-        transformations: {
-          title: (value: string) => value.trim(),
-        },
+        outputFormat: 'formData',
       });
       
+      console.log('validation:', validation);
 
       if (!validation.success) {
         throw new Error(
@@ -36,6 +34,7 @@ export const useAjouterBiensMutation = () => {
       }
 
       // Retourner directement le bien créé
+
       return result.data;
     },
 

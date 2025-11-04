@@ -10,25 +10,25 @@ export async function POST(req: NextRequest) {
         // TODO: Vérification email/mot de passe en DB
 
         // Exemple fictif
-        if (body.email === "admin@test.com" && body.password === "password") {
+        if (body.email === "admin@agence.ci" && body.password === "password") {
 
-            const response: ILoginResponse = {
-                user: {
-                    id: "1",
-                    email: body.email,
-                    firstName: "Admin",
-                    lastName: "Test",
-                    phoneNumber: "0123456789",
-                    role: UtilisateurRole.ADMIN,
-                    status: UtilisateurStatus.ACTIVE,
-                    isPasswordChangeRequired: false,
-                    createdAt: new Date().toISOString(),
-                    updatedAt: new Date().toISOString(),
-                    deletedAt: "",
-                },
-                accessToken: "ACCESS_TOKEN_EXAMPLE",
-                refreshToken: "REFRESH_TOKEN_EXAMPLE",
-            };
+ const response: ILoginResponse = {
+  id: "1",
+  fullname: "Admin Test",
+  phone: "0123456789",
+  email: body.email,
+  role: UtilisateurRole.ADMIN,
+  photoBucket: "user-photos",
+  photoKey: "default-avatar.png",
+  address: "Abidjan, Côte d’Ivoire",
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+  deletedAt: null,
+  token: "ACCESS_TOKEN_EXAMPLE",
+  refreshToken: "REFRESH_TOKEN_EXAMPLE",
+};
+
+
 
             return NextResponse.json(response);
         }

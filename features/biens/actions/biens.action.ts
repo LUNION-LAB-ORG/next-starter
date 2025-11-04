@@ -35,7 +35,7 @@ export const obtenirUnBiensAction = async (id: string): Promise<ActionResponse<I
 export const ajouterBiensAction = async (formdata: BiensAddDTO): Promise<ActionResponse<IBiens>> => {
     try {
         const data = await biensAPI.ajouterBiens(formdata);
-        console.log("dds data", data);
+        console.log("les  data venant de biens Action", data);
         return {
             success: true,
             data: data,

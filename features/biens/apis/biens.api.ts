@@ -32,6 +32,11 @@ export const biensAPI: IBiensAPI = {
             endpoint: `/properties`,
             method: "POST",
             data,
+            config: {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            },
         });
     },
     modifierBiens(id: string, data: BiensUpdateDTO): Promise<IBiensAddUpdateResponse> {
@@ -43,7 +48,7 @@ export const biensAPI: IBiensAPI = {
     },
     supprimerBiens(id: string): Promise<IBiensDeleteResponse> {
         return api.request<IBiensDeleteResponse>({
-            endpoint: `/biens/${id}`,
+            endpoint: `/properties/${id}`,
             method: "DELETE",
         });
     },

@@ -1,32 +1,32 @@
-import { useState, useMemo, useCallback } from "react";
 import {
+    ColumnDef,
     SortingState,
     VisibilityState,
-    useReactTable,
     getCoreRowModel,
     getSortedRowModel,
-    ColumnDef,
+    useReactTable,
 } from "@tanstack/react-table";
 import { useQueryStates } from 'nuqs';
-import { utilisateurFiltersClient } from '../filters/utilisateur.filters';
-import { useUtilisateursListQuery } from "../queries/biens-list.query";
-import { IUtilisateur, IUtilisateursParams } from "../types/biens.type";
+import { useCallback, useMemo, useState } from "react";
+import { biensFiltersClient } from "../filters/biens.filters";
+import { useBiensListQuery } from "../queries/biens-list.query";
+import { IBiens, IBiensParams } from "../types/biens.type";
 
-export interface IUtilisateurListTableProps {
-    columns: ColumnDef<IUtilisateur>[];
+export interface IBiensListTableProps {
+    columns: ColumnDef<IBiens>[];
 }
 
-export function useUtilisateurListTable({ columns }: IUtilisateurListTableProps) {
+export function useBiensListTable({ columns }: IBiensListTableProps) {
     // États pour le tri et la visibilité des colonnes et la sélection des lignes
     const [sorting, setSorting] = useState<SortingState>([]);
     const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
     const [rowSelection, setRowSelection] = useState({});
 
     // Gestion des paramètres d'URL via Nuqs
-    const [filters, setFilters] = useQueryStates(utilisateurFiltersClient.filter, utilisateurFiltersClient.option);
+    const [filters, setFilters] = useQueryStates(biensFiltersClient.filter, biensFiltersClient.option);
 
     // Construction des paramètres de recherche
-    const currentSearchParams: IUtilisateursParams = useMemo(() => {
+    const currentSearchParams: IBiensParams = useMemo(() => {
         return {
             page: filters.page,
             limit: filters.limit,
@@ -40,7 +40,7 @@ export function useUtilisateurListTable({ columns }: IUtilisateurListTableProps)
     }, [filters]);
 
     // Récupération des données avec options React Query optimisées
-    const { data, isLoading, isError, isFetching } = useUtilisateursListQuery(currentSearchParams);
+    const { data, isLoading, isError, isFetching } = useBiensListQuery(currentSearchParams);
 
     const users = data?.data || [];
     const totalPages = data?.meta?.totalPages || 1;
@@ -50,19 +50,19 @@ export function useUtilisateurListTable({ columns }: IUtilisateurListTableProps)
     const [editOpen, setEditOpen] = useState(false);
     const [deleteOpen, setDeleteOpen] = useState(false);
     const [lockUnlockOpen, setLockUnlockOpen] = useState(false);
-    const [currentUser, setCurrentUser] = useState<IUtilisateur | null>(null);
+    const [currentUser, setCurrentUser] = useState<IBiens | null>(null);
 
-    const handleLockUnlockUser = useCallback((user: IUtilisateur) => {
+    const handleLockUnlockUser = useCallback((user: IBiens) => {
         setCurrentUser(user);
         setLockUnlockOpen(true);
     }, []);
 
-    const handleEditUser = useCallback((user: IUtilisateur) => {
+    const handleEditUser = useCallback((user: IBiens) => {
         setCurrentUser(user);
         setEditOpen(true);
     }, []);
 
-    const handleDeleteUser = useCallback((user: IUtilisateur) => {
+    const handleDeleteUser = useCallback((user: IBiens) => {
         setCurrentUser(user);
         setDeleteOpen(true);
     }, []);

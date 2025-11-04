@@ -24,11 +24,12 @@ import {
 import { getEnumValues } from "@/utils/getEnumValues";
 import { useModifierProfilMutation } from "@/features/utilisateur/queries/utilisateur-update.mutation";
 import { getUtilisateurRole } from "@/features/utilisateur/utils/getUtilisateurRole";
+import { IBiens } from "@/features/biens/types/biens.type";
 
 type Props = {
   isOpen: boolean;
   setIsOpen: (open: boolean) => void;
-  utilisateur: IUtilisateur | null;
+  utilisateur: IBiens | null;
 };
 
 export function BiensUpdateModal({

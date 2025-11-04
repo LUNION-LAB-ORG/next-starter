@@ -1,3 +1,5 @@
+// ✅ biens.type.ts (corrigé et aligné avec ton schéma Zod)
+
 export enum ListingType {
   SALE = "SALE",
   RENT = "RENT",
@@ -22,46 +24,64 @@ export enum BiensStatus {
   SOLD = "SOLD",
   RENTED = "RENTED",
   PENDING = "PENDING",
+  IN_PROGRESS = "IN_PROGRESS",
 }
 
 export interface IBiens {
   id: string;
+
+  // --- Informations principales ---
   title: string;
   slug?: string;
   description?: string;
+  coupDeCoeur?: boolean;
+
+  // --- Informations de vente/location ---
   listingType: ListingType;
   currency?: Currency;
-  price: number;
-  secondaryPrice?: number;
+  price: string;
+  secondaryPrice?: string;
   pricePeriod?: PricePeriod;
-  area?: number;
-  landArea?: number;
+
+  // --- Dimensions ---
+  area?: string;
+  landArea?: string;
   rooms?: number;
   bedrooms?: number;
   bathrooms?: number;
   garages?: number;
   garageCapacity?: number;
   yearBuilt?: number;
+
+  // --- Localisation ---
   cityId: string;
   communeId?: string;
   areaId?: string;
   addressLine1?: string;
   addressLine2?: string;
-  latitude?: number;
-  longitude?: number;
+  latitude?: string;
+  longitude?: string;
   categoryId?: string;
+
+  // --- Commodités ---
   amenities?: string[];
+
+  // --- Médias ---
   coverMediaId?: string;
-  statut?: BiensStatus;
-  images: string[];
-  video: string;
+  images: string[]; // URLs des images uploadées
+  video?: string; // URL ou identifiant de la vidéo
+
+  // --- Statut ---
+  status: BiensStatus;
+
+  // --- Métadonnées ---
   createdAt: string;
   updatedAt: string;
   deletedAt: string | null;
 }
 
 export interface IBiensParams {
-  statut?: BiensStatus;
+  status?: BiensStatus;
   listingType?: ListingType;
   cityId?: string;
   communeId?: string;
@@ -77,42 +97,43 @@ export interface IBiensParams {
   limit?: number;
 }
 
-export interface IBiensAddUpdateResponse extends Pick<
-  IBiens,
-  | "id"
-  | "title"
-  | "slug"
-  | "description"
-  | "listingType"
-  | "currency"
-  | "price"
-  | "secondaryPrice"
-  | "pricePeriod"
-  | "area"
-  | "landArea"
-  | "rooms"
-  | "bedrooms"
-  | "bathrooms"
-  | "garages"
-  | "garageCapacity"
-  | "yearBuilt"
-  | "cityId"
-  | "communeId"
-  | "areaId"
-  | "addressLine1"
-  | "addressLine2"
-  | "latitude"
-  | "longitude"
-  | "categoryId"
-  | "amenities"
-  | "coverMediaId"
-  | "statut"
-  | "images"
-  | "video"
-  | "createdAt"
-  | "updatedAt"
-  | "deletedAt"
-> {}
+export interface IBiensAddUpdateResponse
+  extends Pick<
+    IBiens,
+    | "id"
+    | "title"
+    | "slug"
+    | "description"
+    | "listingType"
+    | "currency"
+    | "price"
+    | "secondaryPrice"
+    | "pricePeriod"
+    | "area"
+    | "landArea"
+    | "rooms"
+    | "bedrooms"
+    | "bathrooms"
+    | "garages"
+    | "garageCapacity"
+    | "yearBuilt"
+    | "cityId"
+    | "communeId"
+    | "areaId"
+    | "addressLine1"
+    | "addressLine2"
+    | "latitude"
+    | "longitude"
+    | "categoryId"
+    | "amenities"
+    | "coverMediaId"
+    | "status"
+    | "images"
+    | "video"
+    | "createdAt"
+    | "updatedAt"
+    | "deletedAt"
+  > {}
 
 export interface IBiensDeleteResponse {
   success: true;

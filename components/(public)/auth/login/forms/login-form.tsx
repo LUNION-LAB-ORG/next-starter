@@ -35,7 +35,7 @@ const LoginForm = () => {
   } = useForm<LoginDTO>({
     resolver: zodResolver(loginSchema),
     mode: "all",
-    defaultValues: { email: "admin@test.com", password: "password" },
+    defaultValues: { email: "admin@agence.ci", password: "password" },
   });
 
   const onSubmit = async (data: LoginDTO) => {
@@ -59,7 +59,7 @@ const LoginForm = () => {
             id="email"
             type="email"
             label={t("email_label")}
-            placeholder="admin@test.com"
+            placeholder="admin@agence.ci"
             disabled={isPending}
             isInvalid={!!errors.email}
           />

@@ -15,7 +15,7 @@ export interface IBiensAPI {
 export const biensAPI: IBiensAPI = {
     obtenirTousBiens(params: IBiensParams): Promise<PaginatedResponse<IBiens>> {
         return api.request<PaginatedResponse<IBiens>>({
-            endpoint: `/biens`,
+            endpoint: `/properties`,
             method: "GET",
             searchParams: params as SearchParams,
         });

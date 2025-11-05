@@ -11,10 +11,6 @@ export const BiensStatusEnum = z.enum([
   "IN_PROGRESS",
 ]);
 
- 
-
- 
-
 export const BiensAddSchema = z.object({
   // --- Informations principales ---
   title: z
@@ -35,21 +31,15 @@ export const BiensAddSchema = z.object({
   listingType: ListingTypeEnum,
   currency: CurrencyEnum.optional(),
 
-  price: z
-    .string({ message: "Le prix est requis" })
-  ,
-
-  secondaryPrice: z
-    .string().optional(),
+  price: z.string({ message: "Le prix est requis" }),
+  secondaryPrice: z.string().optional(),
 
   pricePeriod: PricePeriodEnum.optional(),
 
   // --- Dimensions ---
-  area: z
-    .string().optional(),
+  area: z.string().optional(),
 
-  landArea: z
-    .string().optional(),
+  landArea: z.string().optional(),
 
   rooms: z.coerce.number().min(0).optional(),
   bedrooms: z.coerce.number().min(0).optional(),
@@ -65,27 +55,20 @@ export const BiensAddSchema = z.object({
   addressLine1: z.string().optional(),
   addressLine2: z.string().optional(),
 
-  latitude: z
-    .string().optional(),
+  latitude: z.string().optional(),
 
-  longitude: z
-    .string().optional(),
+  longitude: z.string().optional(),
 
   categoryId: z.string(),
 
   // --- Commodités ---
-  amenities: z
-    .array(z.string().min(1).max(100))
-    .optional()
-    .default([]),
+  amenities: z.array(z.string().min(1).max(100)).optional().default([]),
 
   // --- Statut ---
   status: BiensStatusEnum.optional().default("DRAFT").optional(),
 
   // --- Médias ---
-  images: z
-    .array(z.instanceof(File))
-    .min(1, "Au moins une image est requise"),
+  images: z.array(z.instanceof(File)).min(1, "Au moins une image est requise"),
   video: z.instanceof(File).optional(),
 });
 

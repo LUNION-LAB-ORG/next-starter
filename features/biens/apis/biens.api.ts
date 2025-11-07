@@ -41,7 +41,7 @@ export const biensAPI: IBiensAPI = {
     },
     modifierBiens(id: string, data: BiensUpdateDTO): Promise<IBiensAddUpdateResponse> {
         return api.request<IBiensAddUpdateResponse>({
-            endpoint: `/biens/${id}/profile`,
+            endpoint: `/properties/${id}`,
             method: "PATCH",
             data,
         });

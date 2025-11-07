@@ -2,9 +2,7 @@
 
 import * as React from "react";
 
-import { NavDocuments } from "@/components/(protected)/dashboard/common/nav-documents";
 import { NavMain } from "@/components/(protected)/dashboard/common/nav-main";
-import { NavSecondary } from "@/components/(protected)/dashboard/common/nav-secondary";
 import { NavUser } from "@/components/(protected)/dashboard/common/nav-user";
 import { Logo } from "@/components/icons";
 import {

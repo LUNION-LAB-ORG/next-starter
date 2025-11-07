@@ -10,47 +10,45 @@ import {
 } from "@heroui/react";
 import { useCallback } from "react";
 
-import { useSupprimerUtilisateurMutation } from "@/features/utilisateur/queries/utilisateur-delete.mutation";
 import { useSupprimerBiensMutation } from "@/features/biens/queries/biens-delete.mutation";
 import { IBiens } from "@/features/biens/types/biens.type";
 
 type Props = {
   isOpen: boolean;
-  setIsOpen: (open: boolean) => void;
-  biens: IBiens | null;
+  bien: IBiens | null;
+  onClose: () => void;
 };
 
-export function BiensDeleteModal({ isOpen, setIsOpen, biens }: Props) {
+export function BiensDeleteModal({ isOpen, bien, onClose }: Props) {
   const { mutateAsync: supprimerBiensMutation, isPending } =
     useSupprimerBiensMutation();
 
   const handleClose = useCallback(() => {
-    if (!isPending) {
-      setIsOpen(false);
-    }
-  }, [isPending, setIsOpen]);
+    if (!isPending) onClose();
+  }, [isPending, onClose]);
 
   const handleDelete = useCallback(async () => {
-    await supprimerBiensMutation({ id: biens?.id || "" });
+    if (!bien?.id) return;
+    await supprimerBiensMutation({ id: bien.id });
     handleClose();
-  }, [supprimerBiensMutation, handleClose, biens]);
+  }, [supprimerBiensMutation, handleClose, bien]);
 
   return (
-    <Modal isOpen={isOpen} onOpenChange={setIsOpen}>
+    <Modal isOpen={isOpen} onOpenChange={(open) => !open && handleClose()}>
       <ModalContent>
         <ModalHeader className="flex flex-col gap-1">
           <h1 className="text-lg font-medium text-primary">
-            {`Supprimer ${biens?.title}  ?`}
+            {`Supprimer ${bien?.title ?? "ce bien"} ?`}
           </h1>
           <p className="text-sm text-gray-500">
-            Êtes-vous sûr de vouloir supprimer ce bien ? Ce bien sera banni de
-            l&apos;application.
+            Êtes-vous sûr de vouloir supprimer ce bien ? Cette action est
+            irréversible.
           </p>
         </ModalHeader>
         <ModalBody />
         <ModalFooter>
           <Button
-            color="danger"
+            color="default"
             variant="light"
             onPress={handleClose}
             disabled={isPending}

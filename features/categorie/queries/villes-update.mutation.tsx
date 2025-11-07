@@ -4,8 +4,8 @@ import { addToast } from "@heroui/toast";
 import { useMutation } from "@tanstack/react-query";
 import { processAndValidateFormData } from "ak-zod-form-kit";
 import { CheckCircle2, X } from "lucide-react";
-import { modifierBiensAction } from "../actions/biens.action";
-import { BiensUpdateDTO, BiensUpdateSchema } from "../schema/biens.schema";
+import { modifierBiensAction } from "../actions/categorie.action";
+import { BiensUpdateDTO, BiensUpdateSchema } from "../schema/categorie.schema";
 import { useInvalidateBiensQuery } from "./index.query";
 
 export const useModifierBiensMutation = () => {
@@ -57,7 +57,7 @@ export const useModifierBiensMutation = () => {
     },
     onError: async (error) => {
       addToast({
-        title: "Erreur modification du biens:",
+        title: "Erreur modification utilisateur:",
         description: error.message,
         promise: Promise.reject(error),
         icon: <X />,

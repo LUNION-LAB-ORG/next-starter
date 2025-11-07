@@ -1,25 +1,25 @@
 import { useQueryClient } from '@tanstack/react-query';
 
 // 1- Clé de cache
-export const biensKeyQuery = (...params: any[]) => {
+export const villesKeyQuery = (...params: any[]) => {
     if (params.length === 0) {
-        return ['biens'];
+        return ['villes'];
     }
-    return ['biens', ...params];
+    return ['villes', ...params];
 };
 
 // 2. Créez un hook personnalisé pour l'invalidation
-export const useInvalidateBiensQuery = () => {
+export const useInvalidateVillesQuery = () => {
     const queryClient = useQueryClient();
 
     return async (...params: any[]) => {
         await queryClient.invalidateQueries({
-            queryKey: biensKeyQuery(...params),
+            queryKey: villesKeyQuery(...params),
             exact: false
         });
 
         await queryClient.refetchQueries({
-            queryKey: biensKeyQuery(),
+            queryKey: villesKeyQuery(),
             type: 'active'
         });
     };

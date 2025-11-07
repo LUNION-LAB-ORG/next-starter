@@ -14,30 +14,21 @@ import {
   Image,
 } from "@heroui/react";
 import { Edit, Trash2 } from "lucide-react";
-import { useState, useMemo } from "react";
+import { useState } from "react";
 
 interface BiensTableProps {
   data: IBiens[];
   onEdit: (bien: IBiens) => void;
-  onDelete: (id: string) => void;
-  rowsPerPage?: number; // optionnel pour ajuster la pagination
+  onDelete: (bien: IBiens) => void; // ✅ Corrigé : reçoit le bien complet
 }
 
-export default function BiensTable({
-  data,
-  onEdit,
-  onDelete,
-  rowsPerPage = 5,
-}: BiensTableProps) {
+export default function BiensTable({ data, onEdit, onDelete }: BiensTableProps) {
   const [page, setPage] = useState(1);
+  const rowsPerPage = 5;
 
-  // Pagination calculée
-  const pages = useMemo(() => Math.ceil(data.length / rowsPerPage), [data, rowsPerPage]);
-  const items = useMemo(
-    () => data.slice((page - 1) * rowsPerPage, page * rowsPerPage),
-    [data, page, rowsPerPage]
-  );
-  console.log("Items affichés :", items);
+  // Pagination
+  const pages = Math.ceil(data.length / rowsPerPage);
+  const items = data.slice((page - 1) * rowsPerPage, page * rowsPerPage);
 
   return (
     <div className="w-full overflow-x-auto">
@@ -52,8 +43,8 @@ export default function BiensTable({
           <TableColumn>Actions</TableColumn>
         </TableHeader>
 
-        <TableBody items={items} emptyContent="Aucun bien trouvé.">
-          {(bien) => (
+        <TableBody emptyContent="Aucun bien trouvé.">
+          {items.map((bien) => (
             <TableRow key={bien.id}>
               <TableCell className="font-medium">{bien.title}</TableCell>
               <TableCell>{bien.listingType}</TableCell>
@@ -83,6 +74,7 @@ export default function BiensTable({
                 )}
               </TableCell>
               <TableCell className="flex gap-2">
+                {/* ✏️ Bouton Modifier */}
                 <Button
                   isIconOnly
                   color="primary"
@@ -92,21 +84,24 @@ export default function BiensTable({
                 >
                   <Edit size={16} />
                 </Button>
+
+                {/* 🗑️ Bouton Supprimer */}
                 <Button
                   isIconOnly
                   color="danger"
                   variant="flat"
                   size="sm"
-                  onPress={() => onDelete(bien.id)}
+                  onPress={() => onDelete(bien)} // ✅ envoie tout le bien
                 >
                   <Trash2 size={16} />
                 </Button>
               </TableCell>
             </TableRow>
-          )}
+          ))}
         </TableBody>
       </Table>
 
+      {/* Pagination */}
       {pages > 1 && (
         <div className="flex justify-center mt-4">
           <Pagination

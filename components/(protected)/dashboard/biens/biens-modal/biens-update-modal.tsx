@@ -2,6 +2,7 @@
 
 import {
   Button,
+  Input,
   Modal,
   ModalBody,
   ModalContent,
@@ -9,156 +10,363 @@ import {
   ModalHeader,
   Select,
   SelectItem,
+  Textarea,
 } from "@heroui/react";
-import { useEffect, useCallback } from "react";
+import { useEffect, useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { toast } from "sonner";
 
-import { IBiens, ListingType, Currency, BiensStatus } from "@/features/biens/types/biens.type";
-import { BiensUpdateSchema, BiensUpdateDTO } from "@/features/biens/schema/biens.schema";
+import {
+  BiensStatusEnum,
+  BiensUpdateDTO,
+  BiensUpdateSchema,
+  CurrencyEnum,
+  ListingTypeEnum,
+  PricePeriodEnum,
+} from "@/features/biens/schema/biens.schema";
+
+import { IBiens } from "@/features/biens/types/biens.type";
 import { useModifierBiensMutation } from "@/features/biens/queries/biens-update.mutation";
+import { useVillesListQuery } from "@/features/villes/queries/villes-list.query";
+import { useCategoryListQuery } from "@/features/categorie/queries/category-list.query";
+import type { IVilles, IVillesParams } from "@/features/villes/types/villes.type";
+import type { ICategory } from "@/features/categorie/types/categorie.type";
+import type { PaginatedResponse } from "@/types/api.type";
 
+// 🧩 Types externes : villes & catégories
+type Ville = { id: string; name: string };
+type Categorie = { id: string; label: string };
 
 type Props = {
   isOpen: boolean;
-  setIsOpen: (open: boolean) => void;
   bien: IBiens | null;
+  onClose: () => void;
+  villes?: Ville[];
+  categories?: Categorie[];
+  villesLoading?: boolean;
+  categoriesLoading?: boolean;
+  villesError?: boolean;
+  categoriesError?: boolean;
 };
 
-export function BiensUpdateModal({ isOpen, setIsOpen, bien }: Props) {
+export function BiensUpdateModal({
+  isOpen,
+  bien,
+  onClose,
+  villes = [],
+  categories = [],
+  villesLoading,
+  categoriesLoading,
+  villesError,
+  categoriesError,
+}: Props) {
   const { mutateAsync: updateBien, isPending } = useModifierBiensMutation();
 
-  const { setValue, handleSubmit, reset, watch, formState: { errors, isValid } } = useForm<BiensUpdateDTO>({
+  // If parent did not provide villes/categories, fetch them here
+  const [params] = useState<IVillesParams>({ page: 1, limit: 20 });
+  const {
+    data: villesData,
+    isLoading: villesQueryLoading,
+    isError: villesQueryError,
+  } = useVillesListQuery(params);
+
+  const {
+    data: categoriesData,
+    isLoading: categoriesQueryLoading,
+    isError: categoriesQueryError,
+  } = useCategoryListQuery(params);
+
+  // typed guard for paginated responses
+  function isPaginatedResponse<T>(obj: unknown): obj is PaginatedResponse<T> {
+    return typeof obj === "object" && obj !== null && Array.isArray((obj as any).data);
+  }
+
+  const mergedVilles: IVilles[] =
+    villes && villes.length > 0
+      ? (villes as IVilles[])
+      : isPaginatedResponse<IVilles>(villesData)
+      ? villesData.data
+      : Array.isArray(villesData)
+      ? (villesData as IVilles[])
+      : [];
+
+  const mergedCategories: ICategory[] =
+    categories && categories.length > 0
+      ? (categories as ICategory[])
+      : isPaginatedResponse<ICategory>(categoriesData)
+      ? categoriesData.data
+      : Array.isArray(categoriesData)
+      ? (categoriesData as ICategory[])
+      : [];
+
+  const finalVillesLoading = villesLoading ?? villesQueryLoading;
+  const finalCategoriesLoading = categoriesLoading ?? categoriesQueryLoading;
+  const finalVillesError = villesError ?? villesQueryError;
+  const finalCategoriesError = categoriesError ?? categoriesQueryError;
+
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    reset,
+    watch,
+    getValues,
+    setError,
+    formState: { errors, isValid },
+  } = useForm<BiensUpdateDTO>({
     resolver: zodResolver(BiensUpdateSchema),
     mode: "onChange",
   });
 
-  // Fonction pour gérer les select
-  const handleSelectChange = <T extends string>(field: keyof BiensUpdateDTO) =>
-    (e: React.ChangeEvent<HTMLSelectElement>) => {
-      setValue(field, e.target.value as T, { shouldValidate: true, shouldDirty: true });
-    };
-
+  // 🔒 Fermeture sécurisée
   const handleClose = useCallback(() => {
     if (!isPending) {
-      setIsOpen(false);
+      onClose();
       setTimeout(() => reset(), 200);
     }
-  }, [isPending, setIsOpen, reset]);
+  }, [isPending, onClose, reset]);
 
-  const onSubmit = useCallback(async (data: BiensUpdateDTO) => {
-    if (!bien) return;
-    await updateBien({ id: bien.id, data });
-    handleClose();
-  }, [updateBien, bien, handleClose]);
+  // 🚀 Soumission du formulaire
+  const onSubmit = useCallback(
+    async (data: BiensUpdateDTO) => {
+      if (!bien) return;
+      try {
+        await updateBien({ id: bien.id, data });
+        toast.success("Bien mis à jour avec succès !");
+        handleClose();
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        // Try to extract backend-provided message after a colon (some actions prefix their errors)
+        const backendMessage = message.includes(":")
+          ? message.split(":").slice(1).join(":").trim()
+          : message;
 
-  // Remplir le formulaire quand le modal s'ouvre
+        // If the backend complains about images, attach the error to the `images` field so the form shows it inline
+        if (backendMessage && /image/i.test(backendMessage)) {
+          try {
+            setError("images" as any, { type: "server", message: backendMessage });
+          } catch (e) {
+            // ignore setError failures
+          }
+        }
+
+        toast.error(backendMessage || "Erreur lors de la mise à jour");
+      }
+    },
+    [updateBien, bien, handleClose]
+  );
+
+  // 🪄 Préremplir le formulaire à l’ouverture
   useEffect(() => {
     if (!isOpen || !bien) return;
 
-  const mapListingType = (value: string) => {
-  if (value === "SALE" || value === "RENT") return value;
-  return "SALE"; // valeur par défaut
-};
-
-const mapStatus = (value: string): BiensStatus => {
-  if (["DRAFT", "PUBLISHED", "ARCHIVED", "IN_PROGRESS"].includes(value)) {
-    return value as BiensStatus;
-  }
-  return "DRAFT";
-};
-
-reset({
-  title: bien.title,
-  description: bien.description,
-  listingType: mapListingType(bien.listingType),
-  currency: bien.currency,
-  price: bien.price,
-  status: mapStatus(bien.status),
-});
-
+    reset({
+      title: bien.title || "",
+      description: bien.description || "",
+      // Convert external ListingType (enum) to the form-expected union (zod ListingTypeEnum)
+      listingType: (ListingTypeEnum.options as readonly string[]).includes(
+        bien.listingType as unknown as string
+      )
+        ? (bien.listingType as unknown as z.infer<typeof ListingTypeEnum>)
+        : ("SALE" as z.infer<typeof ListingTypeEnum>),
+      // Ensure these fields are strings to match Zod schema
+      price: bien.price !== undefined && bien.price !== null ? String(bien.price) : "",
+      secondaryPrice:
+        bien.secondaryPrice !== undefined && bien.secondaryPrice !== null
+          ? String(bien.secondaryPrice)
+          : "",
+      currency: bien.currency,
+      pricePeriod: bien.pricePeriod,
+  area: bien.area !== undefined && bien.area !== null ? String(bien.area) : "",
+  landArea: bien.landArea !== undefined && bien.landArea !== null ? String(bien.landArea) : "",
+      rooms: bien.rooms,
+      bedrooms: bien.bedrooms,
+      bathrooms: bien.bathrooms,
+      garages: bien.garages,
+      garageCapacity: bien.garageCapacity,
+      yearBuilt: bien.yearBuilt,
+      cityId: bien.cityId,
+      communeId: bien.communeId,
+      areaId: bien.areaId,
+      addressLine1: bien.addressLine1,
+      addressLine2: bien.addressLine2,
+      latitude: bien.latitude,
+      longitude: bien.longitude,
+      categoryId: bien.categoryId,
+      // Map status from backend enum to form zod enum; fallback to 'DRAFT' if not supported
+      status: (BiensStatusEnum.options as readonly string[]).includes(
+        bien.status as unknown as string
+      )
+        ? (bien.status as unknown as z.infer<typeof BiensStatusEnum>)
+        : ("DRAFT" as z.infer<typeof BiensStatusEnum>),
+    });
   }, [isOpen, bien, reset]);
 
   return (
-    <Modal isOpen={isOpen} onOpenChange={setIsOpen}>
+    <Modal
+      isOpen={isOpen}
+      onOpenChange={(open) => !open && handleClose()}
+      scrollBehavior="inside"
+    >
       <ModalContent>
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="p-8 space-y-6 bg-white dark:bg-gray-950 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-800 max-w-5xl mx-auto"
+        >
           <ModalHeader>
-            <h1 className="text-lg font-medium text-primary">Modifier le bien: {bien?.title}</h1>
-            <p className="text-sm text-gray-500">Formulaire pour mettre à jour un bien.</p>
+            <div className="flex items-center justify-between w-full">
+              <div>
+                <h1 className="text-2xl font-extrabold text-primary">Modifier le bien</h1>
+                <p className="text-sm text-muted-foreground mt-1">{bien?.title}</p>
+              </div>
+              <div className="text-right text-sm text-muted-foreground">
+                <div>{bien?.cityId ?? "—"}</div>
+              </div>
+            </div>
           </ModalHeader>
 
-          <ModalBody className="flex flex-col gap-4">
+          <ModalBody className="grid grid-cols-2 gap-6">
             {/* Titre */}
-            <input
-              type="text"
-              placeholder="Titre"
-              value={watch("title") || ""}
-              onChange={(e) => setValue("title", e.target.value)}
-              className="input input-bordered w-full"
+            <Input
+              {...register("title")}
+              label="Titre"
+              isInvalid={!!errors.title}
+              errorMessage={errors.title?.message}
             />
-            {errors.title && <span className="text-danger">{errors.title.message}</span>}
 
-            {/* Description */}
-            <textarea
-              placeholder="Description"
-              value={watch("description") || ""}
-              onChange={(e) => setValue("description", e.target.value)}
-              className="textarea textarea-bordered w-full"
-            />
-            {errors.description && <span className="text-danger">{errors.description.message}</span>}
-
-            {/* Listing Type */}
+            {/* Type d’annonce */}
             <Select
+              label="Type d’annonce"
               selectedKeys={[watch("listingType") || ""]}
-              onChange={handleSelectChange<ListingType>("listingType")}
-              disabled={isPending}
-              variant="bordered"
+              onChange={(e) =>
+                setValue("listingType", e.target.value as z.infer<typeof ListingTypeEnum>)
+              }
             >
-              {Object.values(ListingType).map((type) => (
-                <SelectItem key={type}>{type}</SelectItem>
+              {ListingTypeEnum.options.map((t) => (
+                <SelectItem key={t}>{t}</SelectItem>
               ))}
             </Select>
 
-            {/* Currency */}
+            {/* Description */}
+            <Textarea
+              {...register("description")}
+              label="Description"
+              className="col-span-2"
+              placeholder="Décrivez le bien..."
+            />
+
+            {/* Prix */}
+            <Input {...register("price")} label="Prix principal" type="text" />
+            <Input {...register("secondaryPrice")} label="Prix secondaire" type="text" />
+
+            {/* Devise */}
             <Select
+              label="Devise"
               selectedKeys={[watch("currency") || ""]}
-              onChange={handleSelectChange<Currency>("currency")}
-              disabled={isPending}
-              variant="bordered"
+              onChange={(e) =>
+                setValue("currency", e.target.value as z.infer<typeof CurrencyEnum>)
+              }
             >
-              {Object.values(Currency).map((cur) => (
+              {CurrencyEnum.options.map((cur) => (
                 <SelectItem key={cur}>{cur}</SelectItem>
               ))}
             </Select>
 
-            {/* Status */}
+            {/* Période */}
             <Select
-              selectedKeys={[watch("status") || ""]}
-              onChange={handleSelectChange<BiensStatus>("status")}
-              disabled={isPending}
-              variant="bordered"
+              label="Période"
+              selectedKeys={[watch("pricePeriod") || ""]}
+              onChange={(e) =>
+                setValue("pricePeriod", e.target.value as z.infer<typeof PricePeriodEnum>)
+              }
             >
-              {Object.values(BiensStatus).map((status) => (
-                <SelectItem key={status}>{status}</SelectItem>
+              {PricePeriodEnum.options.map((per) => (
+                <SelectItem key={per}>{per}</SelectItem>
               ))}
             </Select>
 
-            {/* Price */}
-            <input
-              type="text"
-              placeholder="Prix"
-              value={watch("price") || ""}
-              onChange={(e) => setValue("price", e.target.value)}
-              className="input input-bordered w-full"
-            />
-            {errors.price && <span className="text-danger">{errors.price.message}</span>}
+            {/* Détails physiques */}
+            <Input {...register("area")} label="Surface habitable (m²)" type="text" />
+            <Input {...register("landArea")} label="Surface du terrain (m²)" type="text" />
+            <Input {...register("rooms")} label="Pièces" type="number" />
+            <Input {...register("bedrooms")} label="Chambres" type="number" />
+            <Input {...register("bathrooms")} label="Salles de bain" type="number" />
+            <Input {...register("garages")} label="Garages" type="number" />
+            <Input {...register("garageCapacity")} label="Capacité garage" type="number" />
+            <Input {...register("yearBuilt")} label="Année de construction" type="number" />
+
+            {/* Ville */}
+            <Select
+              label="Ville"
+              placeholder={
+                villesLoading
+                  ? "Chargement..."
+                  : villesError
+                  ? "Erreur de chargement"
+                  : "Sélectionnez une ville"
+              }
+              selectedKeys={[getValues("cityId") || ""]}
+              onChange={(e) => setValue("cityId", e.target.value)}
+              isDisabled={villesLoading || villesError}
+            >
+              {mergedVilles.map((v) => (
+                  <SelectItem key={v.id} data-value={v.id}>{v.name}</SelectItem>
+                ))}
+            </Select>
+
+            {/* Catégorie */}
+            <Select
+              label="Catégorie"
+              placeholder={
+                categoriesLoading
+                  ? "Chargement..."
+                  : categoriesError
+                  ? "Erreur de chargement"
+                  : "Sélectionnez une catégorie"
+              }
+              selectedKeys={[getValues("categoryId") || ""]}
+              onChange={(e) => setValue("categoryId", e.target.value)}
+              isDisabled={categoriesLoading || categoriesError}
+            >
+              {mergedCategories.map((c) => (
+                <SelectItem key={c.id} dat-value={c.id}>{c.label}</SelectItem>
+              ))}
+            </Select>
+
+            {/* Adresse */}
+            <Input {...register("addressLine1")} label="Adresse principale" />
+            <Input {...register("addressLine2")} label="Complément d’adresse" />
+            <Input {...register("latitude")} label="Latitude" />
+            <Input {...register("longitude")} label="Longitude" />
+
+            {/* Statut */}
+            <Select
+              label="Statut du bien"
+              selectedKeys={[watch("status") || ""]}
+              onChange={(e) =>
+                setValue("status", e.target.value as z.infer<typeof BiensStatusEnum>)
+              }
+            >
+              {BiensStatusEnum.options.map((s) => (
+                <SelectItem key={s}>{s}</SelectItem>
+              ))}
+            </Select>
           </ModalBody>
 
-          <ModalFooter className="flex justify-end gap-2">
-            <Button color="danger" variant="light" onPress={handleClose}>Annuler</Button>
-            <Button type="submit" color="primary" isLoading={isPending} disabled={!isValid}>
-              Modifier
+          <ModalFooter className="flex items-center justify-end gap-3">
+            <Button variant="ghost" onPress={handleClose} className="px-4 py-2">
+              Annuler
+            </Button>
+            <Button
+              type="submit"
+              color="primary"
+              disabled={!isValid}
+              isLoading={isPending}
+              className="px-6 py-2 rounded-md text-sm font-semibold"
+            >
+              Enregistrer
             </Button>
           </ModalFooter>
         </form>

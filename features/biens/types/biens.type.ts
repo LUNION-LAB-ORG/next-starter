@@ -62,7 +62,7 @@ export interface IBiens {
   latitude?: string;
   longitude?: string;
   categoryId?: string;
- media?: string[];
+  media?: string[];
   // --- Commodités ---
   amenities?: string[];
 

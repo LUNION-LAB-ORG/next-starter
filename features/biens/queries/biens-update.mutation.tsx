@@ -23,7 +23,8 @@ export const useModifierBiensMutation = () => {
         BiensUpdateSchema,
         data,
         {
-          outputFormat: "object",
+          // For updates we need to support file uploads (images). Produce FormData so files are sent.
+          outputFormat: "formData",
         }
       );
       if (!validation.success) {
@@ -33,9 +34,10 @@ export const useModifierBiensMutation = () => {
         );
       }
 
+      // Ensure data is properly passed as FormData
       const result = await modifierBiensAction(
         id,
-        validation.data as BiensUpdateDTO
+        validation.data
       );
 
       if (!result.success) {

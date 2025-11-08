@@ -441,11 +441,12 @@ const categoriesList: ICategory[] = Array.isArray(categoriesData)
               label="Ville"
               placeholder={isLoading ? "Chargement..." : "Sélectionnez une ville"}
               isDisabled={isLoading || isError}
-              value={getValues("cityId") || ""}
-              onChange={(e) => setValue("cityId", e.target.value)}
+              isInvalid={!!errors.cityId}
+              errorMessage={errors.cityId?.message}
+              {...register("cityId", { required: "La ville est requise" })}
             >
               {villesList.map((ville) => (
-                <SelectItem key={ville.id} data-value={ville.id}>
+                <SelectItem key={ville.id} dat-value={ville.id}>
                   {ville.name}
                 </SelectItem>
               ))}

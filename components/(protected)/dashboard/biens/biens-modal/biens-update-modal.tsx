@@ -26,6 +26,7 @@ import {
   ListingTypeEnum,
   PricePeriodEnum,
 } from "@/features/biens/schema/biens.schema";
+import { useFileUpload } from "@/hooks/use-file-upload";
 
 import { IBiens } from "@/features/biens/types/biens.type";
 import { useModifierBiensMutation } from "@/features/biens/queries/biens-update.mutation";
@@ -120,6 +121,20 @@ export function BiensUpdateModal({
     mode: "onChange",
   });
 
+  // file upload (images) - same behavior as add modal
+  const [fileState, fileActions] = useFileUpload({
+    multiple: true,
+    accept: "image/*",
+    maxFiles: 10,
+    maxSize: 5 * 1024 * 1024,
+    onFilesChange: (files) => {
+      const onlyFiles = files
+        .map((f) => f.file)
+        .filter((f): f is File => f instanceof File);
+      setValue("images" as any, onlyFiles, { shouldValidate: true });
+    },
+  });
+
   // 🔒 Fermeture sécurisée
   const handleClose = useCallback(() => {
     if (!isPending) {
@@ -132,6 +147,52 @@ export function BiensUpdateModal({
   const onSubmit = useCallback(
     async (data: BiensUpdateDTO) => {
       if (!bien) return;
+      // Validate latitude / longitude client-side to match backend requirements
+      const coordRegex = /^-?\d{1,3}(?:\.\d{1,6})?$/;
+      let hasCoordError = false;
+
+      const latVal = data.latitude;
+      const lngVal = data.longitude;
+
+      if (latVal !== undefined && latVal !== null && String(latVal) !== "") {
+        if (!coordRegex.test(String(latVal).trim())) {
+          try {
+            setError("latitude" as any, {
+              type: "validation",
+              message:
+                "La latitude doit être un nombre décimal avec jusqu'à 3 chiffres entiers et jusqu'à 6 décimales",
+            });
+          } catch (e) {}
+          hasCoordError = true;
+        } else {
+          // normalize to max 6 decimals
+          const parts = String(latVal).split(".");
+          if (parts[1]) parts[1] = parts[1].slice(0, 6);
+          data.latitude = parts.join(".");
+        }
+      }
+
+      if (lngVal !== undefined && lngVal !== null && String(lngVal) !== "") {
+        if (!coordRegex.test(String(lngVal).trim())) {
+          try {
+            setError("longitude" as any, {
+              type: "validation",
+              message:
+                "La longitude doit être un nombre décimal avec jusqu'à 3 chiffres entiers et jusqu'à 6 décimales",
+            });
+          } catch (e) {}
+          hasCoordError = true;
+        } else {
+          const parts = String(lngVal).split(".");
+          if (parts[1]) parts[1] = parts[1].slice(0, 6);
+          data.longitude = parts.join(".");
+        }
+      }
+
+      if (hasCoordError) {
+        toast.error("Veuillez corriger la latitude/longitude avant de soumettre.");
+        return;
+      }
       try {
         await updateBien({ id: bien.id, data });
         toast.success("Bien mis à jour avec succès !");
@@ -228,6 +289,19 @@ export function BiensUpdateModal({
           </ModalHeader>
 
           <ModalBody className="grid grid-cols-2 gap-6">
+            {/* Images */}
+            <div className="col-span-2 border-2 border-dashed p-4 rounded text-center cursor-pointer hover:bg-gray-50 transition-colors" onClick={fileActions.openFileDialog}>
+              <input {...fileActions.getInputProps()} className="hidden" />
+              <p className="text-sm text-gray-600">
+                {fileState.files.length === 0
+                  ? "Glissez des images ici ou cliquez pour sélectionner"
+                  : `${fileState.files.length} image(s) sélectionnée(s)`}
+              </p>
+              {errors.images && (
+                <p className="text-sm text-red-500 mt-1">{errors.images.message}</p>
+              )}
+            </div>
+
             {/* Titre */}
             <Input
               {...register("title")}
@@ -334,6 +408,19 @@ export function BiensUpdateModal({
                 <SelectItem key={c.id} dat-value={c.id}>{c.label}</SelectItem>
               ))}
             </Select>
+
+            {/* --- Upload images (mise à jour) --- */}
+            <div
+              className="col-span-2 border-2 border-dashed p-4 rounded text-center cursor-pointer"
+              onClick={fileActions.openFileDialog}
+            >
+              <input {...fileActions.getInputProps()} className="hidden" />
+              {fileState.files.length === 0
+                ? (bien?.images && bien.images.length > 0
+                    ? `${bien.images.length} image(s) existante(s) — ajoutez-en pour les remplacer` 
+                    : "Glissez vos images ici ou cliquez")
+                : `${fileState.files.length} image(s) sélectionnée(s)`}
+            </div>
 
             {/* Adresse */}
             <Input {...register("addressLine1")} label="Adresse principale" />

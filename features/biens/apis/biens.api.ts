@@ -8,7 +8,7 @@ export interface IBiensAPI {
     obtenirTousBiens(params: IBiensParams): Promise<PaginatedResponse<IBiens>>;
     obtenirBiens(id: string): Promise<IBiens>;
     ajouterBiens(data: BiensAddDTO): Promise<IBiensAddUpdateResponse>;
-    modifierBiens(id: string, data: BiensUpdateDTO): Promise<IBiensAddUpdateResponse>;
+    modifierBiens(id: string, data: BiensUpdateDTO | FormData): Promise<IBiensAddUpdateResponse>;
     supprimerBiens(id: string): Promise<IBiensDeleteResponse>;
 }
 
@@ -23,7 +23,8 @@ export const biensAPI: IBiensAPI = {
 
     obtenirBiens(id: string): Promise<IBiens> {
         return api.request<IBiens>({
-            endpoint: `/biens/${id}/profile`,
+            // Single property endpoint should match the properties resource used elsewhere (/properties/:id)
+            endpoint: `/properties/${id}`,
             method: "GET",
         });
     },
@@ -44,6 +45,34 @@ export const biensAPI: IBiensAPI = {
             endpoint: `/properties/${id}`,
             method: "PATCH",
             data,
+            config: {
+                // Make sure data is sent as FormData if it isn't already
+                transformRequest: [(data) => {
+                    if (data instanceof FormData) return data;
+                    
+                    const formData = new FormData();
+                    // Add each field to FormData, handling arrays and files specially
+                    Object.entries(data).forEach(([key, value]) => {
+                        if (value instanceof File) {
+                            formData.append(key, value);
+                        } else if (Array.isArray(value)) {
+                            if (value.length > 0 && value[0] instanceof File) {
+                                // Handle file arrays (like images)
+                                value.forEach((file) => formData.append(key, file));
+                            } else {
+                                // Handle normal arrays
+                                formData.append(key, JSON.stringify(value));
+                            }
+                        } else if (value !== undefined && value !== null) {
+                            formData.append(key, String(value));
+                        }
+                    });
+                    return formData;
+                }],
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            },
         });
     },
     supprimerBiens(id: string): Promise<IBiensDeleteResponse> {

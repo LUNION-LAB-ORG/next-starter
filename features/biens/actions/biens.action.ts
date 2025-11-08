@@ -47,8 +47,15 @@ export const ajouterBiensAction = async (formdata: BiensAddDTO): Promise<ActionR
 }
 
 
-export const modifierBiensAction = async (id: string, formdata: BiensUpdateDTO): Promise<ActionResponse<IBiens>> => {
+export const modifierBiensAction = async (id: string, formdata: BiensUpdateDTO | FormData): Promise<ActionResponse<IBiens>> => {
     try {
+        console.log("Attempting to update property with ID:", id);
+        
+        // Verify ID format
+        if (!id || typeof id !== 'string') {
+            throw new Error("ID de propriété invalide");
+        }
+
         const data = await biensAPI.modifierBiens(id, formdata);
         return {
             success: true,
@@ -56,6 +63,13 @@ export const modifierBiensAction = async (id: string, formdata: BiensUpdateDTO):
             message: "Profil modifie avec succès",
         }
     } catch (error) {
+        console.error("Error updating property:", error);
+        if (error instanceof Error && error.message.includes("not found")) {
+            return {
+                success: false,
+                error: "La propriété n'existe pas ou a été supprimée",
+            };
+        }
         return handleServerActionError(error, "Erreur lors de la modification du profil");
     }
 }

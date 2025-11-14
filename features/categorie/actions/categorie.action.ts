@@ -6,7 +6,7 @@ import { categoryAPI } from "../apis/categorie.api";
 import { CreateCategoryDTO, UpdatePropertyCategoryDTO } from "../schema/categorie.schema";
 import { ICategory, ICategoryDeleteResponse, ICategoryParams } from "../types/categorie.type";
 
-export const obtenirTousCategoryAction = async (params: ICategoryParams): Promise<ActionResponse<PaginatedResponse<ICategory>>> => {
+export const obtenirTousCategoryAction = async (params: ICategoryParams): Promise<ActionResponse<ICategory[]>> => {
     try {
         const data = await categoryAPI.obtenirTousCategory(params);
         return {

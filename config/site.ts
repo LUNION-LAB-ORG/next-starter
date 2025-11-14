@@ -1,6 +1,6 @@
 export type SiteConfig = typeof siteConfig;
 
-export const locales = ["ar", "en", "fr"];
+export const locales = ["fr"];
 
 export const siteConfig = {
   name: "Next-STARTER",

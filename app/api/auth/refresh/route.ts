@@ -11,7 +11,7 @@ export async function GET(req: NextRequest) {
 
     // TODO: vérifier le refresh token et régénérer un access token
     const response: IRefreshTokenResponse = {
-      accessToken: "NEW_ACCESS_TOKEN_EXAMPLE",
+      token: "NEW_ACCESS_TOKEN_EXAMPLE",
     };
 
     return NextResponse.json(response);

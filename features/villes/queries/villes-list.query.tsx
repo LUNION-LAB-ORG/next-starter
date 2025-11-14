@@ -11,31 +11,28 @@ import { villesKeyQuery } from "./index.query";
 const queryClient = getQueryClient();
 
 //1- Option de requête optimisée
-export const villesListQueryOption = (
-  villesParamsDTO: IVillesParams
-) => {
+export const villesListQueryOption = (villesParamsDTO: IVillesParams) => {
   return {
     queryKey: villesKeyQuery("list", villesParamsDTO),
     queryFn: async () => {
       const result = await obtenirTousVillesAction(villesParamsDTO);
       if (!result.success) {
         throw new Error(
-          result.error || "Erreur lors de la récupération des villes"
+          result.error || "Erreur lors de la récupération des villes",
         );
       }
       return result.data!;
     },
     placeholderData: (previousData: any) => previousData,
-    staleTime: 30 * 1000, //30 secondes
+    staleTime: 2 * 60 * 1000, // 2 minutes
+    cacheTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false, //Ne pas refetch lors du focus de la fenetre
     refetchOnMount: true, //Refetch lors du mount
   };
 };
 
 //2- Hook pour récupérer les utilisateurs
-export const useVillesListQuery = (
-  villesParamsDTO: IVillesParams
-) => {
+export const useVillesListQuery = (villesParamsDTO: IVillesParams) => {
   const query = useQuery(villesListQueryOption(villesParamsDTO));
 
   // Gestion des erreurs dans le hook
@@ -43,10 +40,7 @@ export const useVillesListQuery = (
     if (query.isError && query.error) {
       addToast({
         title: "Erreur lors de la récupération des villes:",
-        description:
-          query.error instanceof Error
-            ? query.error.message
-            : "Erreur inconnue",
+        description: query.error.message,
         icon: <X />,
         color: "danger",
       });
@@ -57,10 +51,6 @@ export const useVillesListQuery = (
 };
 
 //3- Fonction pour précharger les utilisateurs appelée dans les pages
-export const prefetchBiensListQuery = (
-  villesParamsDTO: IVillesParams
-) => {
-  return queryClient.prefetchQuery(
-    villesListQueryOption(villesParamsDTO)
-  );
+export const prefetchBiensListQuery = (villesParamsDTO: IVillesParams) => {
+  return queryClient.prefetchQuery(villesListQueryOption(villesParamsDTO));
 };

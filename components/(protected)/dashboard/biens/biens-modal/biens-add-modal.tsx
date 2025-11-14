@@ -43,7 +43,10 @@ import {
 import { useAjouterCategoryMutation } from "@/features/categorie/queries/category-add.mutation";
 
 import type { PaginatedResponse } from "@/types/api.type";
-import type { IVilles, IVillesParams } from "@/features/villes/types/villes.type";
+import type {
+  IVilles,
+  IVillesParams,
+} from "@/features/villes/types/villes.type";
 import type { ICategory } from "@/features/categorie/types/categorie.type";
 
 /* --- 📘 Réutilisation des types partagés --- */
@@ -74,27 +77,26 @@ export function BiensAddModal() {
   }, [categoriesData]);
 
   // ✅ Correction du typage des listes
-// Helper type guard to detect paginated responses without using `any`
-function isPaginatedResponse<T>(obj: unknown): obj is PaginatedResponse<T> {
-  if (typeof obj !== "object" || obj === null) return false;
-  const record = obj as Record<string, unknown>;
-  return Array.isArray(record.data);
-}
+  // Helper type guard to detect paginated responses without using `any`
+  function isPaginatedResponse<T>(obj: unknown): obj is PaginatedResponse<T> {
+    if (typeof obj !== "object" || obj === null) return false;
+    const record = obj as Record<string, unknown>;
+    return Array.isArray(record.data);
+  }
 
-// Villes : gérer tableau ou paginé
-const villesList: IVilles[] = Array.isArray(data)
-  ? data
-  : isPaginatedResponse<IVilles>(data)
-  ? data.data
-  : [];
+  // Villes : gérer tableau ou paginé
+  const villesList: IVilles[] = Array.isArray(data)
+    ? data
+    : isPaginatedResponse<IVilles>(data)
+      ? data.data
+      : [];
 
-// Catégories : gérer tableau ou paginé
-const categoriesList: ICategory[] = Array.isArray(categoriesData)
-  ? categoriesData
-  : isPaginatedResponse<ICategory>(categoriesData)
-  ? categoriesData.data
-  : [];
-
+  // Catégories : gérer tableau ou paginé
+  const categoriesList: ICategory[] = Array.isArray(categoriesData)
+    ? categoriesData
+    : isPaginatedResponse<ICategory>(categoriesData)
+      ? categoriesData.data
+      : [];
 
   const { mutateAsync: biensCreateMutation, isPending: biensCreatePending } =
     useAjouterBiensMutation();
@@ -181,7 +183,7 @@ const categoriesList: ICategory[] = Array.isArray(categoriesData)
         });
       }
     },
-    [biensCreateMutation, handleClose]
+    [biensCreateMutation, handleClose],
   );
 
   /* --- 🏙️ Sous-formulaire : Ajouter une Ville --- */
@@ -202,13 +204,13 @@ const categoriesList: ICategory[] = Array.isArray(categoriesData)
     });
 
     const onSubmitVille = useCallback(
-        async (data: CreateVillesDTO) => {
-          // `CreateVillesDTO` schema already normalizes `communes` to string[] via Zod transform,
-          // so we can rely on its type here.
-          const payload: CreateVillesDTO = data;
+      async (data: CreateVillesDTO) => {
+        // `CreateVillesDTO` schema already normalizes `communes` to string[] via Zod transform,
+        // so we can rely on its type here.
+        const payload: CreateVillesDTO = data;
 
-          // If communes is an empty array we still send it (schema accepts it). If you'd rather
-          // omit it when empty, construct a partial payload - but mutation expects CreateVillesDTO.
+        // If communes is an empty array we still send it (schema accepts it). If you'd rather
+        // omit it when empty, construct a partial payload - but mutation expects CreateVillesDTO.
 
         try {
           await villesCreateMutation(payload);
@@ -219,13 +221,14 @@ const categoriesList: ICategory[] = Array.isArray(categoriesData)
           reset();
           refetch();
         } catch (error) {
-          const message = error instanceof Error ? error.message : String(error);
+          const message =
+            error instanceof Error ? error.message : String(error);
           toast.error(message || "Impossible d’ajouter la ville.", {
             icon: <X className="text-red-500" />,
           });
         }
       },
-      [villesCreateMutation, reset, refetch]
+      [villesCreateMutation, reset, refetch],
     );
 
     return (
@@ -259,7 +262,10 @@ const categoriesList: ICategory[] = Array.isArray(categoriesData)
             </ModalBody>
 
             <ModalFooter>
-              <Button variant="light" onPress={() => setIsVilleModalOpen(false)}>
+              <Button
+                variant="light"
+                onPress={() => setIsVilleModalOpen(false)}
+              >
                 Annuler
               </Button>
               <Button
@@ -290,8 +296,10 @@ const categoriesList: ICategory[] = Array.isArray(categoriesData)
       defaultValues: { label: "Villa", parentId: "" },
     });
 
-    const { mutateAsync: categorieCreateMutation, isPending: categorieCreatePending } =
-      useAjouterCategoryMutation();
+    const {
+      mutateAsync: categorieCreateMutation,
+      isPending: categorieCreatePending,
+    } = useAjouterCategoryMutation();
 
     const onSubmitCategorie = useCallback(
       async (data: CreateCategoryDTO) => {
@@ -307,17 +315,21 @@ const categoriesList: ICategory[] = Array.isArray(categoriesData)
           reset();
           refetchCategories();
         } catch (error) {
-          const message = error instanceof Error ? error.message : String(error);
+          const message =
+            error instanceof Error ? error.message : String(error);
           toast.error(message || "Impossible d’ajouter la catégorie.", {
             icon: <X className="text-red-500" />,
           });
         }
       },
-      [categorieCreateMutation, reset, refetchCategories]
+      [categorieCreateMutation, reset, refetchCategories],
     );
 
     return (
-      <Modal isOpen={isCategorieModalOpen} onOpenChange={setIsCategorieModalOpen}>
+      <Modal
+        isOpen={isCategorieModalOpen}
+        onOpenChange={setIsCategorieModalOpen}
+      >
         <ModalContent>
           <form onSubmit={handleSubmit(onSubmitCategorie)}>
             <ModalHeader>Ajouter une Catégorie</ModalHeader>
@@ -339,7 +351,10 @@ const categoriesList: ICategory[] = Array.isArray(categoriesData)
               />
             </ModalBody>
             <ModalFooter>
-              <Button variant="light" onPress={() => setIsCategorieModalOpen(false)}>
+              <Button
+                variant="light"
+                onPress={() => setIsCategorieModalOpen(false)}
+              >
                 Annuler
               </Button>
               <Button
@@ -382,12 +397,19 @@ const categoriesList: ICategory[] = Array.isArray(categoriesData)
           </h1>
 
           <div className="grid grid-cols-2 gap-4">
-            <Input {...register("title")} label="Titre" isInvalid={!!errors.title} />
+            <Input
+              {...register("title")}
+              label="Titre"
+              isInvalid={!!errors.title}
+            />
 
             <Select
               label="Type d’annonce"
               onChange={(e) =>
-                setValue("listingType", e.target.value as z.infer<typeof ListingTypeEnum>)
+                setValue(
+                  "listingType",
+                  e.target.value as z.infer<typeof ListingTypeEnum>,
+                )
               }
             >
               {ListingTypeEnum.options.map((t) => (
@@ -408,7 +430,10 @@ const categoriesList: ICategory[] = Array.isArray(categoriesData)
             <Select
               label="Devise"
               onChange={(e) =>
-                setValue("currency", e.target.value as z.infer<typeof CurrencyEnum>)
+                setValue(
+                  "currency",
+                  e.target.value as z.infer<typeof CurrencyEnum>,
+                )
               }
             >
               {CurrencyEnum.options.map((cur) => (
@@ -419,7 +444,10 @@ const categoriesList: ICategory[] = Array.isArray(categoriesData)
             <Select
               label="Période"
               onChange={(e) =>
-                setValue("pricePeriod", e.target.value as z.infer<typeof PricePeriodEnum>)
+                setValue(
+                  "pricePeriod",
+                  e.target.value as z.infer<typeof PricePeriodEnum>,
+                )
               }
             >
               {PricePeriodEnum.options.map((per) => (
@@ -431,15 +459,29 @@ const categoriesList: ICategory[] = Array.isArray(categoriesData)
             <Input {...register("landArea")} label="Surface du terrain (m²)" />
             <Input {...register("rooms")} label="Pièces" type="number" />
             <Input {...register("bedrooms")} label="Chambres" type="number" />
-            <Input {...register("bathrooms")} label="Salles de bain" type="number" />
+            <Input
+              {...register("bathrooms")}
+              label="Salles de bain"
+              type="number"
+            />
             <Input {...register("garages")} label="Garages" type="number" />
-            <Input {...register("garageCapacity")} label="Capacité garage" type="number" />
-            <Input {...register("yearBuilt")} label="Année de construction" type="number" />
+            <Input
+              {...register("garageCapacity")}
+              label="Capacité garage"
+              type="number"
+            />
+            <Input
+              {...register("yearBuilt")}
+              label="Année de construction"
+              type="number"
+            />
 
             {/* --- Sélecteur de ville --- */}
             <Select
               label="Ville"
-              placeholder={isLoading ? "Chargement..." : "Sélectionnez une ville"}
+              placeholder={
+                isLoading ? "Chargement..." : "Sélectionnez une ville"
+              }
               isDisabled={isLoading || isError}
               isInvalid={!!errors.cityId}
               errorMessage={errors.cityId?.message}
@@ -463,7 +505,9 @@ const categoriesList: ICategory[] = Array.isArray(categoriesData)
             <Select
               label="Catégorie"
               placeholder={
-                categoriesLoading ? "Chargement..." : "Sélectionnez une catégorie"
+                categoriesLoading
+                  ? "Chargement..."
+                  : "Sélectionnez une catégorie"
               }
               isDisabled={categoriesLoading || categoriesError}
               value={getValues("categoryId") || ""}
@@ -490,7 +534,10 @@ const categoriesList: ICategory[] = Array.isArray(categoriesData)
             <Select
               label="Statut du bien"
               onChange={(e) =>
-                setValue("status", e.target.value as z.infer<typeof BiensStatusEnum>)
+                setValue(
+                  "status",
+                  e.target.value as z.infer<typeof BiensStatusEnum>,
+                )
               }
             >
               {BiensStatusEnum.options.map((status) => (

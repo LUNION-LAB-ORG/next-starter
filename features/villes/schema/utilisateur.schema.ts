@@ -12,7 +12,7 @@ export const UtilisateurAddSchema = z.object({
     .max(100, "Le nom ne doit pas dépasser 100 caractères")
     .trim(),
 
-  email: z.string({ message: "L'email est requis" })
+  email: z
     .email("L'email doit être une adresse valide")
     .max(100, "L'email ne doit pas dépasser 100 caractères")
     .toLowerCase()

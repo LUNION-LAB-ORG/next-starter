@@ -5,7 +5,7 @@ import { CreateCategoryDTO, UpdatePropertyCategoryDTO } from "../schema/categori
 import { ICategory, ICategoryAddUpdateResponse, ICategoryDeleteResponse, ICategoryParams } from "../types/categorie.type";
 
 export interface ICategoryAPI {
-    obtenirTousCategory(params: ICategoryParams): Promise<PaginatedResponse<ICategory>>;
+    obtenirTousCategory(params: ICategoryParams): Promise<ICategory[]>;
     obtenirCategory(id: string): Promise<ICategory>;
     ajouterCategory(data: CreateCategoryDTO): Promise<ICategoryAddUpdateResponse>;
     modifierCategory(id: string, data: UpdatePropertyCategoryDTO): Promise<ICategoryAddUpdateResponse>;
@@ -13,8 +13,8 @@ export interface ICategoryAPI {
 }
 
 export const categoryAPI: ICategoryAPI = {
-    obtenirTousCategory(params: ICategoryParams): Promise<PaginatedResponse<ICategory>> {
-        return api.request<PaginatedResponse<ICategory>>({
+    obtenirTousCategory(params: ICategoryParams): Promise<ICategory[]> {
+        return api.request<ICategory>({
             endpoint: `/property-categories`,
             method: "GET",
             searchParams: params as SearchParams,

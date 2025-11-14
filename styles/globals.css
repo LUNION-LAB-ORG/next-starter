@@ -98,3 +98,7 @@
     @apply border-border outline-ring/50;
   }
 }
+
+.leaflet-container {
+  height: 100%;
+}

@@ -6,7 +6,7 @@ import { IVillesAddUpdateResponse, IVillesParams } from "../types/villes.type";
 import { IVilles, IVillesDeleteResponse } from './../types/villes.type';
 
 export interface IVillesAPI {
-    obtenirTousVilles(params: IVillesParams): Promise<PaginatedResponse<IVilles>>;
+    obtenirTousVilles(params: IVillesParams): Promise<IVilles[]>;
     obtenirVilles(id: string): Promise<IVilles>;
     ajouterVilles(data: CreateVillesDTO): Promise<IVillesAddUpdateResponse>;
     modifierVilles(id: string, data: UpdateVillesDTO): Promise<IVillesAddUpdateResponse>;
@@ -14,8 +14,8 @@ export interface IVillesAPI {
 }
 
 export const villesAPI: IVillesAPI = {
-    obtenirTousVilles(params: IVillesParams): Promise<PaginatedResponse<IVilles>> {
-        return api.request<PaginatedResponse<IVilles>>({
+    obtenirTousVilles(params: IVillesParams): Promise<IVilles[]> {
+        return api.request<IVilles[]>({
             endpoint: `/villes`,
             method: "GET",
             searchParams: params as SearchParams,

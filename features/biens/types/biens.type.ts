@@ -27,6 +27,11 @@ export enum BiensStatus {
   IN_PROGRESS = "IN_PROGRESS",
 }
 
+export interface IAmenity {
+  id?: string;
+  name: string;
+}
+
 export interface IBiens {
   id: string;
 
@@ -64,7 +69,7 @@ export interface IBiens {
   categoryId?: string;
   media?: string[];
   // --- Commodités ---
-  amenities?: string[];
+  amenities?: IAmenity[];
 
   // --- Médias ---
   coverMediaId?: string;

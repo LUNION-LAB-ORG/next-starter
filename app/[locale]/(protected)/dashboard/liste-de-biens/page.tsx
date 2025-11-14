@@ -1,10 +1,10 @@
 
-import BiensList from '@/components/(protected)/dashboard/liste-de-biens/biens-list';
+import BienForm from '@/components/(protected)/dashboard/liste-de-biens/bien-form';
 
 const Page = () => {
     return (
         <div>
-          <BiensList/>
+          <BienForm/>
         
         </div>
     );

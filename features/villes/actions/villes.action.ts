@@ -6,7 +6,7 @@ import { villesAPI } from "../apis/villes.api";
 import { CreateVillesDTO, UpdateVillesDTO } from "../schema/villes.schema";
 import { IVilles, IVillesDeleteResponse, IVillesParams } from "../types/villes.type";
 
-export const obtenirTousVillesAction = async (params: IVillesParams): Promise<ActionResponse<PaginatedResponse<IVilles>>> => {
+export const obtenirTousVillesAction = async (params: IVillesParams): Promise<ActionResponse<IVilles[]>> => {
     try {
         const data = await villesAPI.obtenirTousVilles(params);
         return {

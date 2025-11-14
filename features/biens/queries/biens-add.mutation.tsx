@@ -33,8 +33,6 @@ export const useAjouterBiensMutation = () => {
         throw new Error(result.error || 'Erreur lors de l’ajout du bien ui.');
       }
 
-      // Retourner directement le bien créé
-
       return result.data;
     },
 

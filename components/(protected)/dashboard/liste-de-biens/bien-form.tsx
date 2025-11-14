@@ -8,7 +8,7 @@ import { IBiens, IBiensParams } from "@/features/biens/types/biens.type";
 import { BiensUpdateModal } from "../biens/biens-modal/biens-update-modal";
 import { BiensDeleteModal } from "../biens/biens-modal/biens-delete-modal";
 
-const BiensList = () => {
+const BienForm = () => {
   const [selectedBien, setSelectedBien] = React.useState<IBiens | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = React.useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = React.useState(false);
@@ -100,4 +100,4 @@ const BiensList = () => {
   );
 };
 
-export default BiensList;
+export default BienForm;

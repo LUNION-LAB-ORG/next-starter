@@ -14,7 +14,7 @@ export interface ICategoryAPI {
 
 export const categoryAPI: ICategoryAPI = {
     obtenirTousCategory(params: ICategoryParams): Promise<ICategory[]> {
-        return api.request<ICategory>({
+        return api.request<ICategory[]>({
             endpoint: `/property-categories`,
             method: "GET",
             searchParams: params as SearchParams,

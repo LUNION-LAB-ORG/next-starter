@@ -11,15 +11,15 @@ import {
 import { useCallback } from "react";
 
 import { useSupprimerBiensMutation } from "@/features/biens/queries/biens-delete.mutation";
-import { IBiens } from "@/features/biens/types/biens.type";
+import { IBien } from "@/features/biens/types/biens.type";
 
 type Props = {
   isOpen: boolean;
-  bien: IBiens | null;
+  bien: IBien | null;
   onClose: () => void;
 };
 
-export function BiensDeleteModal({ isOpen, bien, onClose }: Props) {
+export function BienDeleteModal({ isOpen, bien, onClose }: Props) {
   const { mutateAsync: supprimerBiensMutation, isPending } =
     useSupprimerBiensMutation();
 

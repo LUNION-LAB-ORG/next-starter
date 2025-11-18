@@ -3,7 +3,7 @@ export type SiteConfig = typeof siteConfig;
 export const locales = ["fr"];
 
 export const siteConfig = {
-  name: "Next-STARTER",
+  name: "Luxury Home Abidjan",
   description: "Make beautiful websites regardless of your design experience.",
   navItems: [
     {

@@ -20,19 +20,19 @@ import { toast } from "sonner";
 
 import {
   BiensStatusEnum,
-  BiensUpdateDTO,
-  BiensUpdateSchema,
+  BienUpdateDTO,
+  BienUpdateSchema,
   CurrencyEnum,
   ListingTypeEnum,
   PricePeriodEnum,
 } from "@/features/biens/schema/biens.schema";
 import { useFileUpload } from "@/hooks/use-file-upload";
 
-import { IBiens } from "@/features/biens/types/biens.type";
-import { useModifierBiensMutation } from "@/features/biens/queries/biens-update.mutation";
+import { IBien } from "@/features/biens/types/biens.type";
+import { useModifierBienMutation } from "@/features/biens/queries/biens-update.mutation";
 import { useVillesListQuery } from "@/features/villes/queries/villes-list.query";
 import { useCategoryListQuery } from "@/features/categorie/queries/category-list.query";
-import type { IVilles, IVillesParams } from "@/features/villes/types/villes.type";
+import type { IVille, IVillesParams } from "@/features/villes/types/villes.type";
 import type { ICategory } from "@/features/categorie/types/categorie.type";
 import type { PaginatedResponse } from "@/types/api.type";
 
@@ -42,7 +42,7 @@ type Categorie = { id: string; label: string };
 
 type Props = {
   isOpen: boolean;
-  bien: IBiens | null;
+  bien: IBien | null;
   onClose: () => void;
   villes?: Ville[];
   categories?: Categorie[];
@@ -63,7 +63,7 @@ export function BiensUpdateModal({
   villesError,
   categoriesError,
 }: Props) {
-  const { mutateAsync: updateBien, isPending } = useModifierBiensMutation();
+  const { mutateAsync: updateBien, isPending } = useModifierBienMutation();
 
   // If parent did not provide villes/categories, fetch them here
   const [params] = useState<IVillesParams>({ page: 1, limit: 20 });
@@ -84,13 +84,13 @@ export function BiensUpdateModal({
     return typeof obj === "object" && obj !== null && Array.isArray((obj as any).data);
   }
 
-  const mergedVilles: IVilles[] =
+  const mergedVilles: IVille[] =
     villes && villes.length > 0
-      ? (villes as IVilles[])
-      : isPaginatedResponse<IVilles>(villesData)
+      ? (villes as IVille[])
+      : isPaginatedResponse<IVille>(villesData)
       ? villesData.data
       : Array.isArray(villesData)
-      ? (villesData as IVilles[])
+      ? (villesData as IVille[])
       : [];
 
   const mergedCategories: ICategory[] =
@@ -116,8 +116,8 @@ export function BiensUpdateModal({
     getValues,
     setError,
     formState: { errors, isValid },
-  } = useForm<BiensUpdateDTO>({
-    resolver: zodResolver(BiensUpdateSchema),
+  } = useForm<BienUpdateDTO>({
+    resolver: zodResolver(BienUpdateSchema),
     mode: "onChange",
   });
 
@@ -145,7 +145,7 @@ export function BiensUpdateModal({
 
   // 🚀 Soumission du formulaire
   const onSubmit = useCallback(
-    async (data: BiensUpdateDTO) => {
+    async (data: BienUpdateDTO) => {
       if (!bien) return;
       // Validate latitude / longitude client-side to match backend requirements
       const coordRegex = /^-?\d{1,3}(?:\.\d{1,6})?$/;
@@ -248,14 +248,14 @@ export function BiensUpdateModal({
       garages: bien.garages,
       garageCapacity: bien.garageCapacity,
       yearBuilt: bien.yearBuilt,
-      cityId: bien.cityId,
+      cityId: bien.city,
       communeId: bien.communeId,
       areaId: bien.areaId,
       addressLine1: bien.addressLine1,
       addressLine2: bien.addressLine2,
       latitude: bien.latitude,
       longitude: bien.longitude,
-      categoryId: bien.categoryId,
+      categoryId: bien.category,
       // Map status from backend enum to form zod enum; fallback to 'DRAFT' if not supported
       status: (BiensStatusEnum.options as readonly string[]).includes(
         bien.status as unknown as string
@@ -283,7 +283,7 @@ export function BiensUpdateModal({
                 <p className="text-sm text-muted-foreground mt-1">{bien?.title}</p>
               </div>
               <div className="text-right text-sm text-muted-foreground">
-                <div>{bien?.cityId ?? "—"}</div>
+                <div>{bien?.city ?? "—"}</div>
               </div>
             </div>
           </ModalHeader>

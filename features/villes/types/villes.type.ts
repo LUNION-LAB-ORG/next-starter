@@ -1,7 +1,7 @@
 // ✅ ville.type.ts
 
 // --- Interface principale ---
-export interface IVilles {
+export interface IVille {
   id: string;
 
   // --- Informations principales ---
@@ -35,7 +35,7 @@ export interface IVillesParams {
 // --- Réponse de création / mise à jour ---
 export interface IVillesAddUpdateResponse
   extends Pick<
-    IVilles,
+    IVille,
     "id" | "name" | "countryCode" | "communes" | "createdAt" | "updatedAt" | "deletedAt"
   > {}
 

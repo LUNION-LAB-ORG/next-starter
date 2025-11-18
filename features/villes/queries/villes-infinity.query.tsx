@@ -35,8 +35,8 @@ export const biensInfinityQueryOption = (
     initialPageParam: 1,
 
     getNextPageParam: (lastPage: PaginatedResponse<IBiens>) => {
-      const hasNextPage = lastPage.meta.totalPages > lastPage.meta.page;
-      return hasNextPage ? lastPage.meta.page + 1 : undefined;
+      const hasNextPage = lastPage.pagination.pages > lastPage.pagination.page;
+      return hasNextPage ? lastPage.pagination.page + 1 : undefined;
     },
   };
 };

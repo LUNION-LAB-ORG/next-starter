@@ -1,7 +1,7 @@
 "use client";
 
 import Content from "@/components/primitives/Content";
-import React from "react";
+import React, { useEffect } from "react";
 import VilleModal from "@/components/(protected)/dashboard/biens/ville-modal";
 import {
   Form,
@@ -30,31 +30,93 @@ import { EditorState } from "lexical";
 import useBienForm from "@/features/biens/hooks/use-bien-form";
 import MapField from "@/components/common/map-field";
 import FileUploadView from "@/components/block/file-upload-view";
-import { BiensAddDTO } from "@/features/biens/schema/biens.schema";
+import {
+  BienUpdateDTO,
+  BienUpdateSchema,
+} from "@/features/biens/schema/biens.schema";
 import { toast } from "sonner";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import CommoditeCombobox from "@/components/(protected)/dashboard/biens/commodite-combobox";
 import AddButton from "@/components/(protected)/dashboard/biens/add-button";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useModifierBienMutation } from "@/features/biens/queries/biens-update.mutation";
+import { useBienDetailsQuery } from "@/features/biens/queries/biens-detail.query";
+import { SelectWithAddButton } from "@/components/(protected)/dashboard/biens/forms/select-with-add-buttons";
+import VilleAddSelect from "@/components/(protected)/dashboard/biens/forms/modals/ville/ville-add-select";
+import CategorieAddSelect from "@/components/(protected)/dashboard/biens/forms/modals/categorie/categorie-add-select";
 
-export function BienForm() {
+// TODO: Fusionner avec BienCreateForm en un seul composant avec des props pour mode create/update
+
+export function BienUpdateForm({ bienId }: { bienId: string }) {
   const {
-    form,
+    data: bienToUpdate,
+    isLoading: bienLoading,
+    isError: bienError,
+  } = useBienDetailsQuery(bienId);
+
+  if (bienError) {
+    return (
+      <Content>
+        <div className="text-center py-20">
+          <h2 className="text-2xl font-semibold mb-4">Bien non trouvé</h2>
+          <p className="text-muted-foreground">
+            Le bien immobilier que vous essayez de modifier n&apos;existe pas ou
+            a été supprimé.
+          </p>
+        </div>
+      </Content>
+    );
+  }
+
+  const form = useForm<BienUpdateDTO>({
+    resolver: zodResolver(BienUpdateSchema),
+    mode: "onSubmit",
+    defaultValues: {
+      coupDeCoeur: false,
+      title: "",
+      listingType: "SALE",
+      price: "",
+      secondaryPrice: "",
+      currency: "XOF",
+      pricePeriod: "MONTH",
+      categoryId: "",
+      cityId: "",
+      area: "",
+      landArea: "",
+      rooms: 0,
+      bedrooms: 0,
+      bathrooms: 0,
+      garages: 0,
+      garageCapacity: 0,
+      yearBuilt: 2023,
+      addressLine1: "",
+      addressLine2: "",
+      latLong: { lat: undefined, lng: undefined },
+      amenities: [],
+      description: "",
+      images: [],
+      video: undefined,
+      coverImage: undefined,
+    },
+  });
+
+  const {
     coverUpload,
     imagesUpload,
     videosUpload,
     uploadLimit,
-    biensCreateMutation,
-    biensCreatePending,
     villeInput,
     categoryInput,
     amenities,
-  } = useBienForm();
+    amenitiesLoading,
+  } = useBienForm({ form });
 
   const {
     data: villes,
     isLoading: villesLoading,
-    isError: villesError,
+    villesCreateMutation,
   } = villeInput;
   const {
     data: categories,
@@ -62,44 +124,84 @@ export function BienForm() {
     isError: categoriesError,
   } = categoryInput;
 
-  async function onSubmit(values: BiensAddDTO) {
-    const bienCree = await toast
-      .promise(biensCreateMutation(values), {
-        loading: "Ajout du bien immobilier en cours...",
-        success: "Bien immobilier ajouté avec succès !",
-        error: "Une erreur est survenue lors de l'ajout du bien immobilier.",
-      })
-      .unwrap();
+  const { mutateAsync: bienUpdateMutation, isPending: bienUpdatePending } =
+    useModifierBienMutation();
+
+  async function onSubmit(values: BienUpdateDTO) {
+    toast.promise(bienUpdateMutation({ id: bienId, data: values }), {
+      loading: "Ajout du bien immobilier en cours...",
+      success: "Bien immobilier ajouté avec succès !",
+      error: "Une erreur est survenue lors de l'ajout du bien immobilier.",
+    });
   }
 
-  // Synchroniser coverImage avec les fichiers uploadés
-  React.useEffect(() => {
-    if (coverUpload.files.length > 0) {
-      form.setValue("coverImage", coverUpload.files[0].file as File);
-    }
-  }, [coverUpload.files, form]);
+  useEffect(() => {
+    if (!bienToUpdate) return;
+    if (categoriesLoading || villesLoading || amenitiesLoading) return;
 
-  // Synchroniser images avec les fichiers uploadés
-  React.useEffect(() => {
-    if (imagesUpload.files.length > 0) {
-      form.setValue(
-        "images",
-        imagesUpload.files.map((f) => f.file as File),
-      );
-    }
-  }, [imagesUpload.files, form]);
+    let descriptionValue = bienToUpdate.description ?? "";
 
-  // Synchroniser video avec les fichiers uploadés
-  React.useEffect(() => {
-    if (videosUpload.files.length > 0) {
-      form.setValue("video", videosUpload.files[0].file as File);
+    try {
+      if (descriptionValue) {
+        JSON.parse(descriptionValue);
+      }
+    } catch {
+      descriptionValue = "";
     }
-  }, [videosUpload.files, form]);
+
+    form.reset({
+      coupDeCoeur: bienToUpdate.coupDeCoeur ?? false,
+      title: bienToUpdate.title ?? "",
+      listingType: bienToUpdate.listingType ?? "SALE",
+      price: bienToUpdate.price != null ? String(bienToUpdate.price) : "",
+      secondaryPrice:
+        bienToUpdate.secondaryPrice != null
+          ? String(bienToUpdate.secondaryPrice)
+          : "",
+      currency: bienToUpdate.currency ?? "XOF",
+      pricePeriod: bienToUpdate.pricePeriod ?? "MONTH",
+      categoryId:
+        bienToUpdate.category?.id != null
+          ? String(bienToUpdate.category.id)
+          : "",
+      cityId: bienToUpdate.city?.id != null ? String(bienToUpdate.city.id) : "",
+      area: bienToUpdate.area != null ? String(bienToUpdate.area) : "",
+      landArea:
+        bienToUpdate.landArea != null ? String(bienToUpdate.landArea) : "",
+      rooms: bienToUpdate.rooms ?? 0,
+      bedrooms: bienToUpdate.bedrooms ?? 0,
+      bathrooms: bienToUpdate.bathrooms ?? 0,
+      garages: bienToUpdate.garages ?? 0,
+      garageCapacity: bienToUpdate.garageCapacity ?? 0,
+      yearBuilt: bienToUpdate.yearBuilt ?? 2023,
+      addressLine1: bienToUpdate.addressLine1 ?? "",
+      addressLine2: bienToUpdate.addressLine2 ?? "",
+      latLong: {
+        lat:
+          bienToUpdate.latitude != null
+            ? Number(bienToUpdate.latitude)
+            : undefined,
+        lng:
+          bienToUpdate.longitude != null
+            ? Number(bienToUpdate.longitude)
+            : undefined,
+      },
+      amenities:
+        bienToUpdate.amenities?.map((a) => ({
+          id: String(a.id),
+          name: a.name,
+        })) ?? [],
+      description: descriptionValue,
+      images: [],
+      video: undefined,
+      coverImage: undefined,
+    });
+  }, [bienToUpdate, form, categoriesLoading, villesLoading, amenitiesLoading]);
 
   return (
     <Content>
       <h1 className="text-xl font-semibold text-primary mb-6">
-        Ajouter un bien immobilier
+        Modifier {bienToUpdate?.title}
       </h1>
       <div>
         <Form {...form}>
@@ -107,7 +209,10 @@ export function BienForm() {
             onSubmit={form.handleSubmit(onSubmit)}
             className="grid grid-cols-5 gap-4"
           >
-            <fieldset disabled={biensCreatePending} className="contents">
+            <fieldset
+              disabled={bienUpdatePending || bienLoading}
+              className="contents"
+            >
               <FormField
                 control={form.control}
                 name="coupDeCoeur"
@@ -253,34 +358,13 @@ export function BienForm() {
                   <FormItem>
                     <FormLabel>Catégories de bien</FormLabel>
                     <FormControl>
-                      <div className="inline-flex items-start gap-2">
-                        <Select
-                          onValueChange={field.onChange}
-                          value={field.value}
-                          disabled={categoriesLoading || categoriesError}
-                        >
-                          <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Type de bien" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectGroup>
-                              <SelectLabel>Catégories de bien</SelectLabel>
-                              {categories?.map((category) => (
-                                <SelectItem
-                                  key={category.id}
-                                  value={category.id}
-                                >
-                                  {category.label}
-                                </SelectItem>
-                              ))}
-                            </SelectGroup>
-                          </SelectContent>
-                        </Select>
-                        <AddButton
-                          loading={categoriesLoading}
-                          tooltipMessage="Ajouter une nouvelle catégorie"
-                        />
-                      </div>
+                      <CategorieAddSelect
+                        value={field.value}
+                        onValueChange={field.onChange}
+                        categories={categories}
+                        disabled={categoriesError}
+                        loading={categoriesLoading}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -293,31 +377,13 @@ export function BienForm() {
                   <FormItem>
                     <FormLabel>Ville</FormLabel>
                     <FormControl>
-                      <div className="inline-flex items-start gap-2">
-                        <Select
-                          onValueChange={field.onChange}
-                          value={field.value}
-                          disabled={villesLoading || villesError}
-                        >
-                          <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Ville" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectGroup>
-                              <SelectLabel>Ville</SelectLabel>
-                              {villes?.map((ville) => (
-                                <SelectItem key={ville.id} value={ville.id}>
-                                  {ville.name}
-                                </SelectItem>
-                              ))}
-                            </SelectGroup>
-                          </SelectContent>
-                        </Select>
-                        <AddButton
-                          loading={villesLoading}
-                          tooltipMessage="Ajouter une nouvelle ville"
-                        />
-                      </div>
+                      <VilleAddSelect
+                        value={field.value}
+                        onValueChange={field.onChange}
+                        villes={villes}
+                        disabled={villesLoading}
+                        loading={villesLoading}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -487,7 +553,10 @@ export function BienForm() {
                   <FormItem className="col-span-2">
                     <FormLabel>Adresse principale</FormLabel>
                     <FormControl>
-                      <Input {...field} />
+                      <Input
+                        {...field}
+                        placeholder="Résidence La Palmeraie, Rue J74, Zone 4C, Marcory"
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -500,7 +569,10 @@ export function BienForm() {
                   <FormItem className="col-span-2">
                     <FormLabel>Adresse secondaire</FormLabel>
                     <FormControl>
-                      <Input {...field} />
+                      <Input
+                        {...field}
+                        placeholder="Appartement 2 chambres, à 200 m du carrefour Prima Center"
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -686,9 +758,11 @@ export function BienForm() {
                 )}
               />
             </fieldset>
-            <Button disabled={biensCreatePending}>
-              {biensCreatePending && <Loader className="animate-spin" />}
-              Ajouter le bien immobilier
+            <Button disabled={bienUpdatePending || bienLoading}>
+              {(bienUpdatePending || bienLoading) && (
+                <Loader className="animate-spin" />
+              )}
+              Mettre à jour le bien
             </Button>
           </form>
         </Form>

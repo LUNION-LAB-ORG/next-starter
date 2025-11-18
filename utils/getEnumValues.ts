@@ -1,3 +1,4 @@
+import { BienStatus } from "@/features/biens/types/biens.type";
 
 /**
  * @function getEnumValues
@@ -7,6 +8,23 @@
  * @param {T} enumObject L'objet enum (ex: UtilisateurRole, UtilisateurStatus).
  * @returns {Array<T[keyof T]>} Un tableau des valeurs de chaîne de l'enum.
  */
-export function getEnumValues<T extends Record<string, any>>(enumObject: T): Array<T[keyof T]> {
-    return Object.values(enumObject).filter(value => typeof value === 'string') as Array<T[keyof T]>;
+export function getEnumValues<T extends Record<string, any>>(
+  enumObject: T,
+): Array<T[keyof T]> {
+  return Object.values(enumObject).filter(
+    (value) => typeof value === "string",
+  ) as Array<T[keyof T]>;
+}
+
+export function getBiensStatusLabel(status: string): string {
+  switch (status) {
+    case BienStatus.DRAFT:
+      return "Brouillon";
+    case BienStatus.PUBLISHED:
+      return "Publié";
+    case BienStatus.ARCHIVED:
+      return "Archivé";
+    default:
+      return "En attente";
+  }
 }

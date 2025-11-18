@@ -1,7 +1,9 @@
-
-import { parseAsString, parseAsInteger, parseAsStringEnum } from 'nuqs';
-import { UtilisateurRole, UtilisateurStatus } from '@/features/utilisateur/types/utilisateur.type';
-import { getEnumValues } from '@/utils/getEnumValues';
+import { parseAsString, parseAsInteger, parseAsStringEnum } from "nuqs";
+import {
+  UtilisateurRole,
+  UtilisateurStatus,
+} from "@/features/utilisateur/types/utilisateur.type";
+import { getEnumValues } from "@/utils/getEnumValues";
 
 /**
  * @constant utilisateurFiltersClient
@@ -11,18 +13,20 @@ import { getEnumValues } from '@/utils/getEnumValues';
  * et sa valeur par défaut.
  */
 export const utilisateurFiltersClient = {
-    filter: {
-        status: parseAsStringEnum<UtilisateurStatus>(getEnumValues(UtilisateurStatus)).withDefault(UtilisateurStatus.ACTIVE),
-        role: parseAsStringEnum<UtilisateurRole>(getEnumValues(UtilisateurRole)),
-        firstName: parseAsString.withDefault(''),
-        lastName: parseAsString.withDefault(''),
-        email: parseAsString.withDefault(''),
-        phoneNumber: parseAsString.withDefault(''),
-        page: parseAsInteger.withDefault(1),
-        limit: parseAsInteger.withDefault(5),
-    },
-    option: {
-        clearOnDefault: true,
-        throttleMs: 500, // 500ms de délai pour les filtres textuels
-    }
+  filter: {
+    status: parseAsStringEnum<UtilisateurStatus>(
+      getEnumValues(UtilisateurStatus),
+    ).withDefault(UtilisateurStatus.ACTIVE),
+    role: parseAsStringEnum<UtilisateurRole>(getEnumValues(UtilisateurRole)),
+    q: parseAsString.withDefault(""),
+    fullname: parseAsString.withDefault(""),
+    email: parseAsString.withDefault(""),
+    phone: parseAsString.withDefault(""),
+    page: parseAsInteger.withDefault(1),
+    limit: parseAsInteger.withDefault(10),
+  },
+  option: {
+    clearOnDefault: true,
+    throttleMs: 500, // 500ms de délai pour les filtres textuels
+  },
 };

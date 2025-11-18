@@ -1,8 +1,5 @@
-
-import { parseAsString, parseAsInteger, parseAsStringEnum } from 'nuqs';
-import { UtilisateurRole, UtilisateurStatus } from '@/features/utilisateur/types/utilisateur.type';
-import { getEnumValues } from '@/utils/getEnumValues';
-import { BiensStatus } from '../types/biens.type';
+import { parseAsString, parseAsInteger, parseAsStringEnum } from "nuqs";
+import { ListingType } from "@/features/biens/types/biens.type";
 
 /**
  * @constant biensFiltersClient
@@ -12,18 +9,17 @@ import { BiensStatus } from '../types/biens.type';
  * et sa valeur par défaut.
  */
 export const biensFiltersClient = {
-    filter: {
-        status: parseAsStringEnum<BiensStatus>(getEnumValues(BiensStatus)).withDefault(BiensStatus.SOLD),
-        role: parseAsStringEnum<UtilisateurRole>(getEnumValues(UtilisateurRole)),
-        firstName: parseAsString.withDefault(''),
-        lastName: parseAsString.withDefault(''),
-        email: parseAsString.withDefault(''),
-        phoneNumber: parseAsString.withDefault(''),
-        page: parseAsInteger.withDefault(1),
-        limit: parseAsInteger.withDefault(5),
-    },
-    option: {
-        clearOnDefault: true,
-        throttleMs: 500, // 500ms de délai pour les filtres textuels
-    }
+  filter: {
+    page: parseAsInteger.withDefault(1),
+    limit: parseAsInteger.withDefault(10),
+    title: parseAsString.withDefault(""),
+    cityId: parseAsString.withDefault(""),
+    communeId: parseAsString.withDefault(""),
+    categoryId: parseAsString.withDefault(""),
+    listingType: parseAsStringEnum(Object.values(ListingType)),
+  },
+  option: {
+    clearOnDefault: true,
+    throttleMs: 500, // 500ms de délai pour les filtres textuels
+  },
 };

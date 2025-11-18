@@ -6,7 +6,7 @@ import { addToast } from "@heroui/toast";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { X } from "lucide-react";
 import { obtenirTousBiensAction } from "../actions/biens.action";
-import { IBiens, IBiensParams } from "../types/biens.type";
+import { IBien, IBiensParams } from "../types/biens.type";
 import { biensKeyQuery } from "./index.query";
 
 const queryClient = getQueryClient();
@@ -34,9 +34,9 @@ export const biensInfinityQueryOption = (
 
     initialPageParam: 1,
 
-    getNextPageParam: (lastPage: PaginatedResponse<IBiens>) => {
-      const hasNextPage = lastPage.meta.totalPages > lastPage.meta.page;
-      return hasNextPage ? lastPage.meta.page + 1 : undefined;
+    getNextPageParam: (lastPage: PaginatedResponse<IBien>) => {
+      const hasNextPage = lastPage.pagination.pages > lastPage.pagination.page;
+      return hasNextPage ? lastPage.pagination.page + 1 : undefined;
     },
   };
 };

@@ -1,19 +1,4 @@
-import {
-    IconCamera,
-    IconChartBar,
-    IconDashboard,
-    IconDatabase,
-    IconFileAi,
-    IconFileDescription,
-    IconFileWord,
-    IconFolder,
-    IconHelp,
-    IconReport,
-    IconSearch,
-    IconSettings,
-    IconUsers,
-    IconUsersGroup,
-} from "@tabler/icons-react";
+import { IconDashboard, IconHome2, IconUsersGroup } from "@tabler/icons-react";
 
 export const data = {
   user: {
@@ -28,23 +13,14 @@ export const data = {
       icon: IconDashboard,
     },
     {
-      title: "Liste de Biens",
-      url: "/dashboard/liste-de-biens",
-      icon: IconUsers,
-    },
-    {
-      title: "Nouveau biens",
+      title: "Portefeuille de biens",
       url: "/dashboard/biens",
-      icon: IconChartBar,
+      icon: IconHome2,
     },
-    
     {
       title: "Team",
-      url: "#",
+      url: "/dashboard/utilisateurs",
       icon: IconUsersGroup,
     },
   ],
- 
- 
-  
 };

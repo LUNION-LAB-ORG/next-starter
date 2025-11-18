@@ -4,9 +4,9 @@ import { ActionResponse, PaginatedResponse } from "@/types/api.type";
 import { handleServerActionError } from "@/utils/handleServerActionError";
 import { villesAPI } from "../apis/villes.api";
 import { CreateVillesDTO, UpdateVillesDTO } from "../schema/villes.schema";
-import { IVilles, IVillesDeleteResponse, IVillesParams } from "../types/villes.type";
+import { IVille, IVillesDeleteResponse, IVillesParams } from "../types/villes.type";
 
-export const obtenirTousVillesAction = async (params: IVillesParams): Promise<ActionResponse<IVilles[]>> => {
+export const obtenirTousVillesAction = async (params: IVillesParams): Promise<ActionResponse<IVille[]>> => {
     try {
         const data = await villesAPI.obtenirTousVilles(params);
         return {
@@ -19,7 +19,7 @@ export const obtenirTousVillesAction = async (params: IVillesParams): Promise<Ac
     }
 }
 
-export const obtenirUnVillesAction = async (id: string): Promise<ActionResponse<IVilles>> => {
+export const obtenirUnVillesAction = async (id: string): Promise<ActionResponse<IVille>> => {
     try {
         const data = await villesAPI.obtenirVilles(id);
         return {
@@ -32,7 +32,7 @@ export const obtenirUnVillesAction = async (id: string): Promise<ActionResponse<
     }
 }
 
-export const ajouterVillesAction = async (formdata: CreateVillesDTO): Promise<ActionResponse<IVilles>> => {
+export const ajouterVillesAction = async (formdata: CreateVillesDTO): Promise<ActionResponse<IVille>> => {
     try {
         const data = await villesAPI.ajouterVilles(formdata);
         console.log("les  data venant de Villes Action", data);
@@ -47,7 +47,7 @@ export const ajouterVillesAction = async (formdata: CreateVillesDTO): Promise<Ac
 }
 
 
-export const modifierVillesAction = async (id: string, formdata: UpdateVillesDTO): Promise<ActionResponse<IVilles>> => {
+export const modifierVillesAction = async (id: string, formdata: UpdateVillesDTO): Promise<ActionResponse<IVille>> => {
     try {
         const data = await villesAPI.modifierVilles(id, formdata);
         return {

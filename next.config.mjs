@@ -9,7 +9,10 @@ const nextConfig = {
         protocol: "http",
         hostname: "localhost:3000",
       },
-      
+      {
+        protocol: 'https',
+        hostname: 'dvsxt5681pvqm.cloudfront.net',
+      },
     ],
     
   },

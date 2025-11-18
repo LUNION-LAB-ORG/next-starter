@@ -190,7 +190,7 @@ export const utilisateurAPI = {
 <!-- end list -->
 
 ```typescript
-// src/features/utilisateur/components/utilisateur-list/bien-form.tsx (Extrait)
+// src/features/utilisateur/components/utilisateur-list/bien-create-form.tsx (Extrait)
 // Ce composant est un exemple de "Vue" qui utilise un "ViewModel" (useUtilisateurListTable)
 // et d'autres composants spécifiques au module.
 "use client";
@@ -748,7 +748,7 @@ La Vue est la couche responsable de l'affichage de l'interface utilisateur.
 * **Description** : Composants React spécifiques à cette fonctionnalité.
 * **Rôle MVVM** : Couche **Vue**.
 * **Convention de nommage des fichiers/dossiers** : Minuscule. Nom du composant : `[nom-du-module]-[traitement]-[type-de-composant].tsx`.
-* **Exemples** : `utilisateur-add-form.tsx`, `utilisateur-list/bien-form.tsx`.
+* **Exemples** : `utilisateur-add-form.tsx`, `utilisateur-list/bien-create-form.tsx`.
 * **Nommage des fonctions/composants** : `PascalCase` (ex: `UtilisateurAddForm`, `UserList`).
 * **Gestion des données** : Affiche l'UI et interagit avec les ViewModels (hooks).
 

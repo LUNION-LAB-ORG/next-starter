@@ -1,9 +1,11 @@
 // ✅ biens.type.ts (corrigé et aligné avec ton schéma Zod)
 
+import { ICategory } from "@/features/categorie/types/categorie.type";
+import { IVille } from "@/features/villes/types/villes.type";
+
 export enum ListingType {
   SALE = "SALE",
-  RENT = "RENT",
-  LEASE = "LEASE",
+  RENT = "RENT"
 }
 
 export enum Currency {
@@ -19,11 +21,10 @@ export enum PricePeriod {
   YEAR = "YEAR",
 }
 
-export enum BiensStatus {
-  AVAILABLE = "AVAILABLE",
-  SOLD = "SOLD",
-  RENTED = "RENTED",
-  PENDING = "PENDING",
+export enum BienStatus {
+  DRAFT = "DRAFT",
+  PUBLISHED = "PUBLISHED",
+  ARCHIVED = "ARCHIVED",
   IN_PROGRESS = "IN_PROGRESS",
 }
 
@@ -32,23 +33,27 @@ export interface IAmenity {
   name: string;
 }
 
-export interface IBiens {
+export interface IPropertyMedia {
   id: string;
+  kind: 'IMAGE' | 'VIDEO';
+  key: string;
+  width?: number;
+  height?: number;
+  createdAt: Date;
+  url: string;
+}
 
-  // --- Informations principales ---
+export interface IBien {
+  id: string;
   title: string;
   slug?: string;
   description?: string;
   coupDeCoeur?: boolean;
-
-  // --- Informations de vente/location ---
   listingType: ListingType;
   currency?: Currency;
   price: string;
   secondaryPrice?: string;
   pricePeriod?: PricePeriod;
-
-  // --- Dimensions ---
   area?: string;
   landArea?: string;
   rooms?: number;
@@ -57,37 +62,30 @@ export interface IBiens {
   garages?: number;
   garageCapacity?: number;
   yearBuilt?: number;
-
-  // --- Localisation ---
-  cityId: string;
+  city: IVille;
   communeId?: string;
   areaId?: string;
   addressLine1?: string;
   addressLine2?: string;
   latitude?: string;
   longitude?: string;
-  categoryId?: string;
-  media?: string[];
-  // --- Commodités ---
+  category?: ICategory;
+  medias?: IPropertyMedia[];
   amenities?: IAmenity[];
-
-  // --- Médias ---
+  coverMedia?: IPropertyMedia; // URL de l'image de couverture
   coverMediaId?: string;
   images: string[]; // URLs des images uploadées
   video?: string; // URL ou identifiant de la vidéo
-
-  // --- Statut ---
-  status: BiensStatus;
-
-  // --- Métadonnées ---
+  status: BienStatus;
   createdAt: string;
   updatedAt: string;
   deletedAt: string | null;
 }
 
 export interface IBiensParams {
-  status?: BiensStatus;
-  listingType?: ListingType;
+  title?: string;
+  status?: BienStatus;
+  listingType?: ListingType | null;
   cityId?: string;
   communeId?: string;
   areaId?: string;
@@ -104,7 +102,7 @@ export interface IBiensParams {
 
 export interface IBiensAddUpdateResponse
   extends Pick<
-    IBiens,
+    IBien,
     | "id"
     | "title"
     | "slug"
@@ -122,14 +120,14 @@ export interface IBiensAddUpdateResponse
     | "garages"
     | "garageCapacity"
     | "yearBuilt"
-    | "cityId"
+    | "city"
     | "communeId"
     | "areaId"
     | "addressLine1"
     | "addressLine2"
     | "latitude"
     | "longitude"
-    | "categoryId"
+    | "category"
     | "amenities"
     | "coverMediaId"
     | "status"

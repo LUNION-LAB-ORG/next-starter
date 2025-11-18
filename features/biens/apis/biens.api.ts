@@ -1,30 +1,30 @@
 import { api } from "@/lib/api";
 import { PaginatedResponse } from "@/types/api.type";
 import { SearchParams } from "ak-api-http";
-import { BiensAddDTO, BiensUpdateDTO } from "../schema/biens.schema";
+import { BienAddDTO, BienUpdateDTO } from "../schema/biens.schema";
 import {
   IAmenity,
-  IBiens,
+  IBien,
   IBiensAddUpdateResponse,
   IBiensDeleteResponse,
   IBiensParams,
 } from "../types/biens.type";
 
 export interface IBiensAPI {
-  obtenirTousBiens(params: IBiensParams): Promise<PaginatedResponse<IBiens>>;
+  obtenirTousBiens(params: IBiensParams): Promise<PaginatedResponse<IBien>>;
   obtenirTousAmenities(): Promise<IAmenity[]>;
-  obtenirBiens(id: string): Promise<IBiens>;
-  ajouterBiens(data: BiensAddDTO): Promise<IBiensAddUpdateResponse>;
+  obtenirBiens(id: string): Promise<IBien>;
+  ajouterBiens(data: BienAddDTO): Promise<IBiensAddUpdateResponse>;
   modifierBiens(
     id: string,
-    data: BiensUpdateDTO | FormData,
+    data: BienUpdateDTO | FormData,
   ): Promise<IBiensAddUpdateResponse>;
   supprimerBiens(id: string): Promise<IBiensDeleteResponse>;
 }
 
 export const biensAPI: IBiensAPI = {
-  obtenirTousBiens(params: IBiensParams): Promise<PaginatedResponse<IBiens>> {
-    return api.request<PaginatedResponse<IBiens>>({
+  obtenirTousBiens(params: IBiensParams): Promise<PaginatedResponse<IBien>> {
+    return api.request<PaginatedResponse<IBien>>({
       endpoint: `/properties`,
       method: "GET",
       searchParams: params as SearchParams,
@@ -38,14 +38,14 @@ export const biensAPI: IBiensAPI = {
     });
   },
 
-  obtenirBiens(id: string): Promise<IBiens> {
-    return api.request<IBiens>({
+  obtenirBiens(id: string): Promise<IBien> {
+    return api.request<IBien>({
       // Single property endpoint should match the properties resource used elsewhere (/properties/:id)
       endpoint: `/properties/${id}`,
       method: "GET",
     });
   },
-  ajouterBiens(data: BiensAddDTO): Promise<IBiensAddUpdateResponse> {
+  ajouterBiens(data: BienAddDTO): Promise<IBiensAddUpdateResponse> {
     return api.request<IBiensAddUpdateResponse>({
       endpoint: `/properties`,
       method: "POST",
@@ -59,7 +59,7 @@ export const biensAPI: IBiensAPI = {
   },
   modifierBiens(
     id: string,
-    data: BiensUpdateDTO,
+    data: BienUpdateDTO,
   ): Promise<IBiensAddUpdateResponse> {
     return api.request<IBiensAddUpdateResponse>({
       endpoint: `/properties/${id}`,

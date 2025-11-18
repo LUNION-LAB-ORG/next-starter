@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ListItemNode, ListNode } from "@lexical/list";
 import { CheckListPlugin } from "@lexical/react/LexicalCheckListPlugin";
 import {
@@ -24,6 +24,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { ElementFormatToolbarPlugin } from "@/components/editor/plugins/toolbar/element-format-toolbar-plugin";
 import { FontFormatToolbarPlugin } from "@/components/editor/plugins/toolbar/font-format-toolbar-plugin";
 import { OnChangePlugin } from "@lexical/react/LexicalOnChangePlugin";
+import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 
 const editorConfig: InitialConfigType = {
   namespace: "Editor",
@@ -49,10 +50,30 @@ type EditorFieldProps = {
   className?: string;
 };
 
+function EditorStateSync({
+  editorSerializedState,
+}: {
+  editorSerializedState?: EditorState;
+}) {
+  const [editor] = useLexicalComposerContext();
+  const [hasInitialized, setHasInitialized] = useState(false);
+
+  useEffect(() => {
+    if (!editorSerializedState || hasInitialized) return;
+
+    const serialized = JSON.stringify(editorSerializedState);
+    const editorState = editor.parseEditorState(serialized);
+
+    editor.setEditorState(editorState);
+    setHasInitialized(true);
+  }, [editor, editorSerializedState, hasInitialized]);
+
+  return null;
+}
+
 export function EditorField({
   editorSerializedState,
   handleChange,
-  className,
 }: EditorFieldProps) {
   const [, setFloatingAnchorElem] = useState<HTMLDivElement | null>(null);
 
@@ -109,6 +130,7 @@ export function EditorField({
                 handleChange?.(editorState);
               }}
             />
+            <EditorStateSync editorSerializedState={editorSerializedState} />
           </div>
         </CardContent>
       </Card>

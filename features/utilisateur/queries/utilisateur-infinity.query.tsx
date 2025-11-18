@@ -36,8 +36,8 @@ export const utilisateursInfinityQueryOption = (
     initialPageParam: 1,
 
     getNextPageParam: (lastPage: PaginatedResponse<IUtilisateur>) => {
-      const hasNextPage = lastPage.meta.totalPages > lastPage.meta.page;
-      return hasNextPage ? lastPage.meta.page + 1 : undefined;
+      const hasNextPage = lastPage.pagination.pages > lastPage.pagination.page;
+      return hasNextPage ? lastPage.pagination.page + 1 : undefined;
     },
   };
 };

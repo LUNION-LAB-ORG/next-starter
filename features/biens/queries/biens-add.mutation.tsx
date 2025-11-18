@@ -3,15 +3,15 @@ import { addToast } from '@heroui/toast';
 import { CheckCircle2, X } from 'lucide-react';
 import { processAndValidateFormData } from 'ak-zod-form-kit';
 import { ajouterBiensAction } from '../actions/biens.action';
-import { BiensAddDTO, BiensAddSchema } from '../schema/biens.schema';
+import { BienAddDTO, BiensAddSchema } from '../schema/biens.schema';
 import { useInvalidateBiensQuery } from './index.query';
-import { IBiens } from '../types/biens.type';
+import { IBien } from '../types/biens.type';
 
 export const useAjouterBiensMutation = () => {
   const invalidateBiensQuery = useInvalidateBiensQuery();
 
-  return useMutation<IBiens, Error, BiensAddDTO>({
-    mutationFn: async (data: BiensAddDTO) => {
+  return useMutation<IBien, Error, BienAddDTO>({
+    mutationFn: async (data: BienAddDTO) => {
       // Validation des données
       const validation = processAndValidateFormData(BiensAddSchema, data, {
         outputFormat: 'formData',
@@ -27,7 +27,7 @@ export const useAjouterBiensMutation = () => {
 
 
       // Appel de l'action
-      const result = await ajouterBiensAction(validation.data as BiensAddDTO);
+      const result = await ajouterBiensAction(validation.data as BienAddDTO);
       console.log('Resultat ajout bien:', result);
     if (!result.success || !result.data) {
         throw new Error(result.error || 'Erreur lors de l’ajout du bien ui.');

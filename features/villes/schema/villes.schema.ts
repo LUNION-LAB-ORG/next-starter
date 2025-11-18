@@ -13,15 +13,6 @@ export const CreateVillesSchema = z.object({
     .min(1, "Le code du pays ne peut pas être vide")
     .max(10, "Le code du pays ne doit pas dépasser 10 caractères")
     .trim(),
-
-  // --- Communes associées ---
- communes: z
-  .union([z.string().optional(), z.array(z.string()).optional()])
-  .transform((val) =>
-    typeof val === "string" ? val.split(",").map(c => c.trim()).filter(Boolean) : val || []
-  )
-  .default([])
-,
 });
 
 // --- Types dérivés ---

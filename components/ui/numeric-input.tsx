@@ -2,11 +2,11 @@ import React from "react";
 import { Input } from "@/components/ui/input";
 
 function NumericInput({
-                        className,
-                        onChange,
-                        value,
-                        ...props
-                      }: React.ComponentProps<"input">) {
+  className,
+  onChange,
+  value,
+  ...props
+}: React.ComponentProps<"input">) {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const raw = e.target.value
       .replace(/\s/g, "")
@@ -17,7 +17,7 @@ function NumericInput({
 
     const newEvent = {
       ...e,
-      target: { ...e.target, value: raw }
+      target: { ...e.target, value: raw },
     } as React.ChangeEvent<HTMLInputElement>;
 
     if (onChange) {
@@ -25,9 +25,10 @@ function NumericInput({
     }
   };
 
-  const displayValue = value && value !== ""
-    ? new Intl.NumberFormat("fr-FR").format(Number(value))
-    : "";
+  const displayValue =
+    value && value !== ""
+      ? new Intl.NumberFormat("fr-FR").format(Number(value))
+      : "";
 
   return (
     <Input

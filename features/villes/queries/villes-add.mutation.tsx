@@ -4,13 +4,13 @@ import { processAndValidateFormData } from 'ak-zod-form-kit';
 import { CheckCircle2, X } from 'lucide-react';
 import { ajouterVillesAction } from '../actions/villes.action';
 import { CreateVillesDTO, CreateVillesSchema } from '../schema/villes.schema';
-import { IVilles } from '../types/villes.type';
+import { IVille } from '../types/villes.type';
 import { useInvalidateVillesQuery } from './index.query';
 
 export const useAjouterVillesMutation = () => {
   const invalidateVillesQuery = useInvalidateVillesQuery();
 
-  return useMutation<IVilles, Error, CreateVillesDTO>({
+  return useMutation<IVille, Error, CreateVillesDTO>({
     mutationFn: async (data: CreateVillesDTO) => {
       // Validation des données
       const validation = processAndValidateFormData(CreateVillesSchema, data, {

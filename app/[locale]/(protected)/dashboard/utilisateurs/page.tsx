@@ -3,6 +3,6 @@ import { UtilisateurList } from "@/components/(protected)/dashboard/utilisateurs
 import { prefetchUtilisateursListQuery } from "@/features/utilisateur/queries/utilisateur-list.query";
 
 export default async function UtilisateursPage() {
-  await prefetchUtilisateursListQuery({ page: 1, limit: 5 });
+  await prefetchUtilisateursListQuery({ page: 1, limit: 10 });
   return <UtilisateurList />;
 }

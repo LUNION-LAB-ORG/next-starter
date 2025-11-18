@@ -10,7 +10,7 @@ import { biensKeyQuery } from "./index.query";
 const queryClient = getQueryClient();
 
 //1- Option de requête
-export const biensQueryOption = (id: string) => {
+export const biensQueryOption = (id?: string) => {
   return {
     queryKey: biensKeyQuery("detail", id),
     queryFn: async () => {
@@ -29,7 +29,7 @@ export const biensQueryOption = (id: string) => {
 };
 
 //2- Hook pour récupérer un utilisateur
-export const useBiensQuery = (id: string) => {
+export const useBienDetailsQuery = (id?: string) => {
   const query = useQuery(biensQueryOption(id));
 
   // Gestion des erreurs dans le hook
@@ -37,10 +37,7 @@ export const useBiensQuery = (id: string) => {
     if (query.isError && query.error) {
       addToast({
         title: "Erreur lors de la récupération du bien:",
-        description:
-          query.error instanceof Error
-            ? query.error.message
-            : "Erreur inconnue",
+        description: query.error.message,
         icon: <X />,
         color: "danger",
       });
@@ -51,6 +48,9 @@ export const useBiensQuery = (id: string) => {
 };
 
 //3- Fonction pour précharger un utilisateur
-export const prefetchBiensQuery = (id: string) => {
+export const prefetchBienDetailQuery = (id: string) => {
+  if (!id) {
+    return Promise.resolve();
+  }
   return queryClient.prefetchQuery(biensQueryOption(id));
 };

@@ -21,7 +21,7 @@ import { toast } from "sonner";
 
 import { useAjouterBiensMutation } from "@/features/biens/queries/biens-add.mutation";
 import {
-  BiensAddDTO,
+  BienAddDTO,
   BiensAddSchema,
   BiensStatusEnum,
   CurrencyEnum,
@@ -44,7 +44,7 @@ import { useAjouterCategoryMutation } from "@/features/categorie/queries/categor
 
 import type { PaginatedResponse } from "@/types/api.type";
 import type {
-  IVilles,
+  IVille,
   IVillesParams,
 } from "@/features/villes/types/villes.type";
 import type { ICategory } from "@/features/categorie/types/categorie.type";
@@ -85,9 +85,9 @@ export function BiensAddModal() {
   }
 
   // Villes : gérer tableau ou paginé
-  const villesList: IVilles[] = Array.isArray(data)
+  const villesList: IVille[] = Array.isArray(data)
     ? data
-    : isPaginatedResponse<IVilles>(data)
+    : isPaginatedResponse<IVille>(data)
       ? data.data
       : [];
 
@@ -123,7 +123,7 @@ export function BiensAddModal() {
     formState: { errors, isValid },
     reset,
     getValues,
-  } = useForm<BiensAddDTO>({
+  } = useForm<BienAddDTO>({
     resolver: zodResolver(BiensAddSchema),
     mode: "onChange",
     defaultValues: {
@@ -163,7 +163,7 @@ export function BiensAddModal() {
   }, [biensCreatePending, reset]);
 
   const onSubmit = useCallback(
-    async (data: BiensAddDTO) => {
+    async (data: BienAddDTO) => {
       const payload = { ...data };
       if (!payload.communeId) delete payload.communeId;
       if (!payload.areaId) delete payload.areaId;

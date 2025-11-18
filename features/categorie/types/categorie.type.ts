@@ -1,7 +1,7 @@
 // --- Interface principale ---
 export interface ICategory {
   id: string;
-
+  key: string;
   // --- Informations principales ---
   label: string;        // Nom de la catégorie
   parentId?: string;    // Catégorie parente (facultatif)

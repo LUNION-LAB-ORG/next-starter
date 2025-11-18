@@ -3,17 +3,17 @@
 import { ActionResponse, PaginatedResponse } from "@/types/api.type";
 import { handleServerActionError } from "@/utils/handleServerActionError";
 import { biensAPI } from "../apis/biens.api";
-import { BiensAddDTO, BiensUpdateDTO } from "../schema/biens.schema";
+import { BienAddDTO, BienUpdateDTO } from "../schema/biens.schema";
 import {
   IAmenity,
-  IBiens,
+  IBien,
   IBiensDeleteResponse,
   IBiensParams,
 } from "../types/biens.type";
 
 export const obtenirTousBiensAction = async (
   params: IBiensParams,
-): Promise<ActionResponse<PaginatedResponse<IBiens>>> => {
+): Promise<ActionResponse<PaginatedResponse<IBien>>> => {
   try {
     const data = await biensAPI.obtenirTousBiens(params);
     return {
@@ -49,7 +49,7 @@ export const obtenirTousAmenitiesAction = async (): Promise<
 
 export const obtenirUnBiensAction = async (
   id: string,
-): Promise<ActionResponse<IBiens>> => {
+): Promise<ActionResponse<IBien>> => {
   try {
     const data = await biensAPI.obtenirBiens(id);
     return {
@@ -66,8 +66,8 @@ export const obtenirUnBiensAction = async (
 };
 
 export const ajouterBiensAction = async (
-  formdata: BiensAddDTO,
-): Promise<ActionResponse<IBiens>> => {
+  formdata: BienAddDTO,
+): Promise<ActionResponse<IBien>> => {
   try {
     const data = await biensAPI.ajouterBiens(formdata);
     console.log("les  data venant de biens Action", data);
@@ -83,8 +83,8 @@ export const ajouterBiensAction = async (
 
 export const modifierBiensAction = async (
   id: string,
-  formdata: BiensUpdateDTO | FormData,
-): Promise<ActionResponse<IBiens>> => {
+  formdata: BienUpdateDTO | FormData,
+): Promise<ActionResponse<IBien>> => {
   try {
     console.log("Attempting to update property with ID:", id);
 

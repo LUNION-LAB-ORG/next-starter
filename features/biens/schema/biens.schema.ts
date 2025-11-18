@@ -10,6 +10,14 @@ export const BiensStatusEnum = z.enum([
   "IN_PROGRESS",
 ]);
 
+const numericField = z
+  .union([z.string(), z.number()])
+  .refine((val) => !isNaN(Number(val)) && Number(val) >= 0, {
+    message: "Doit être un nombre valide supérieur ou égal à 0",
+  })
+  // .transform((val) => Number(val))
+  .optional();
+
 export const BiensAddSchema = z.object({
   title: z
     .string({ message: "Le titre est requis" })
@@ -29,19 +37,19 @@ export const BiensAddSchema = z.object({
   currency: CurrencyEnum.optional(),
 
   price: z.string({ message: "Le prix est requis" }),
-  secondaryPrice: z.string().optional(),
+  secondaryPrice: numericField.default(0),
 
   pricePeriod: PricePeriodEnum.optional(),
-  area: z.string().optional(),
+  area: numericField,
 
-  landArea: z.string().optional(),
+  landArea: numericField,
 
-  rooms: z.number().min(0).optional(),
-  bedrooms: z.number().min(0).optional(),
-  bathrooms: z.number().min(0).optional(),
-  garages: z.number().min(0).optional(),
-  garageCapacity: z.number().min(0).optional(),
-  yearBuilt: z.number().min(0).optional(),
+  rooms: numericField,
+  bedrooms: numericField,
+  bathrooms: numericField,
+  garages: numericField,
+  garageCapacity: numericField,
+  yearBuilt: numericField,
 
   // --- Localisation ---
   cityId: z.string({ error: "La ville est requise" }).min(1, {
@@ -78,8 +86,7 @@ export const BiensAddSchema = z.object({
     error: "L'image de couverture est requise",
   }),
 });
+export const BienUpdateSchema = BiensAddSchema.partial();
 
-export type BiensAddDTO = z.input<typeof BiensAddSchema>;
-
-export const BiensUpdateSchema = BiensAddSchema.partial();
-export type BiensUpdateDTO = z.infer<typeof BiensUpdateSchema>;
+export type BienAddDTO = z.input<typeof BiensAddSchema>;
+export type BienUpdateDTO = z.infer<typeof BienUpdateSchema>;

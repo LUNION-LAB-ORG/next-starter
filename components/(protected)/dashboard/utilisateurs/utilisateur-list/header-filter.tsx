@@ -39,8 +39,7 @@ export function HeaderFilter({
   // Fonction pour reset tous les filtres
   const handleClearAllFilters = () => {
     handleTextFilterChange("email", "");
-    handleTextFilterChange("phoneNumber", "");
-    handleEnumFilterChange("status", "");
+    handleTextFilterChange("phone", "");
     handleEnumFilterChange("role", "");
   };
 
@@ -72,9 +71,9 @@ export function HeaderFilter({
             <div className="relative">
               <Input
                 placeholder="Rechercher par email, nom ou téléphone..."
-                value={filters.email}
+                value={filters.q}
                 onChange={(e) =>
-                  handleTextFilterChange("email", e.target.value)
+                  handleTextFilterChange("q", e.target.value)
                 }
                 startContent={<Search className="w-4 h-4" />}
                 variant="bordered"
@@ -88,32 +87,12 @@ export function HeaderFilter({
                 <Input
                   label="Téléphone"
                   placeholder="Filtrer par téléphone..."
-                  value={filters.phoneNumber}
+                  value={filters.phone}
                   onChange={(e) =>
-                    handleTextFilterChange("phoneNumber", e.target.value)
+                    handleTextFilterChange("phone", e.target.value)
                   }
                   variant="bordered"
                 />
-              </div>
-
-              {/* Filtre par statut */}
-              <div className="flex-1">
-                <Select
-                  label="Statut"
-                  placeholder="Sélectionner un statut"
-                  selectedKeys={filters.status ? [filters.status] : ["_all_"]}
-                  onSelectionChange={(keys) => {
-                    const value = Array.from(keys)[0] as string;
-                    handleEnumFilterChange("status", value);
-                  }}
-                  variant="bordered"
-                >
-                  {getEnumValues(UtilisateurStatus).map((status) => (
-                    <SelectItem key={status}>
-                      {getUtilisateurStatus(status).label}
-                    </SelectItem>
-                  ))}
-                </Select>
               </div>
 
               {/* Filtre par rôle */}
@@ -156,29 +135,18 @@ export function HeaderFilter({
                     </Chip>
                   )}
 
-                  {filters.phoneNumber && (
+                  {filters.phone && (
                     <Chip
                       size="sm"
                       variant="flat"
                       color="primary"
-                      onClose={() => handleTextFilterChange("phoneNumber", "")}
+                      onClose={() => handleTextFilterChange("phone", "")}
                     >
-                      Tél: {filters.phoneNumber}
+                      Tél: {filters.phone}
                     </Chip>
                   )}
 
-                  {filters.status && filters.status !== null && (
-                    <Chip
-                      size="sm"
-                      variant="flat"
-                      color={getUtilisateurStatus(filters.status).color}
-                      onClose={() => handleEnumFilterChange("status", "")}
-                    >
-                      {getUtilisateurStatus(filters.status).label}
-                    </Chip>
-                  )}
-
-                  {filters.role && filters.role !== null && (
+                  {filters.role && (
                     <Chip
                       size="sm"
                       variant="flat"

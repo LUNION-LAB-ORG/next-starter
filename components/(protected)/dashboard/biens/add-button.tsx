@@ -3,7 +3,13 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { Button } from "@/components/ui/button";
 import { Loader, Plus } from "lucide-react";
 
-function AddButton({loading, tooltipMessage}: {loading: boolean; tooltipMessage: string}) {
+type AddButtonProps = {
+  loading: boolean;
+  tooltipMessage: string;
+  onClick: (e: React.MouseEvent<HTMLButtonElement>) => void;
+};
+
+function AddButton({loading, tooltipMessage, onClick}: AddButtonProps) {
   return (
     <Tooltip>
       <TooltipTrigger asChild>
@@ -12,6 +18,8 @@ function AddButton({loading, tooltipMessage}: {loading: boolean; tooltipMessage:
           className="rounded-full"
           variant="outline"
           type="button"
+          onClick={onClick}
+          disabled={loading}
         >
           {loading ? (
             <Loader className="animate-spin" />

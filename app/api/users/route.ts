@@ -37,11 +37,11 @@ export async function GET(req: NextRequest) {
 
     const response: PaginatedResponse<IUtilisateur> = {
         data: filteredUsers.slice(offset, offset + limit),
-        meta: {
+        pagination: {
             total: filteredUsers.length,
             page,
             limit,
-            totalPages: Math.ceil(filteredUsers.length / limit),
+            pages: Math.ceil(filteredUsers.length / limit),
         }
     };
 

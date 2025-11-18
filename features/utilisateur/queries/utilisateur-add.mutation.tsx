@@ -22,10 +22,9 @@ export const useAjouterUtilisateurMutation = () => {
                 {
                     outputFormat: "object",
                     transformations: {
-                        firstName: (value: string) => value.trim(),
-                        lastName: (value: string) => value.trim(),
+                        fullname: (value: string) => value.trim(),
                         email: (value: string) => value.trim().toLowerCase(),
-                        phoneNumber: (value: string) => value.trim(),
+                        phone: (value: string) => value.trim(),
                     },
                 })
 

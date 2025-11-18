@@ -6,12 +6,10 @@ import { SquarePen, Trash2 } from "lucide-react";
 import {
   IUtilisateur,
   UtilisateurRole,
-  UtilisateurStatus,
 } from "@/features/utilisateur/types/utilisateur.type";
 import { getUtilisateurRole } from "@/features/utilisateur/utils/getUtilisateurRole";
-import { getUtilisateurStatus } from "@/features/utilisateur/utils/getUtilisateurStatus";
 import { Button, Chip, Tooltip, User } from "@heroui/react";
-import { formatPhoneInternational } from "@/utils/numericUtils";
+import { formatPhoneForHuman } from "@/utils/numericUtils";
 
 export const columns: ColumnDef<IUtilisateur>[] = [
   {
@@ -19,9 +17,7 @@ export const columns: ColumnDef<IUtilisateur>[] = [
     header: "Nom Complet",
     cell: ({ row }) => {
       const user = row.original;
-      return (
-        <User name={user.fullname}>{user.email}</User>
-      );
+      return <User name={user.fullname}>{user.email}</User>;
     },
   },
   {
@@ -32,7 +28,7 @@ export const columns: ColumnDef<IUtilisateur>[] = [
   {
     accessorKey: "phone",
     header: "Téléphone",
-    cell: ({ row }) => <span>{formatPhoneInternational(row.original.phone)}</span>,
+    cell: ({ row }) => <span>{formatPhoneForHuman(row.original.phone)}</span>,
   },
   {
     accessorKey: "role",
@@ -78,7 +74,7 @@ export const columns: ColumnDef<IUtilisateur>[] = [
 
       return (
         <div className="relative flex items-center gap-2">
-          <Tooltip content="Activer">
+          <Tooltip content="Modifier">
             <Button
               variant="bordered"
               isIconOnly

@@ -21,29 +21,37 @@ export interface IUtilisateursParams {
 }
 
 export interface IUtilisateur {
- id :string;
+  id: string;
   fullname: string;
+  password?: string;
   phone: string;
   email: string;
-  role:UtilisateurRole;
- photoBucket:string;
-photoKey:string;
- address: string;
- createdAt:string;
- updatedAt :string;
+  role: UtilisateurRole;
+  photoBucket: string;
+  photoKey: string;
+  address: string;
+  createdAt: string;
+  updatedAt: string;
   token: string;
   refreshToken: string;
-  deletedAt?: string|null;
+  deletedAt?: string | null;
 }
 
-
-export interface IUtilisateurAddUpdateResponse extends Pick<IUtilisateur,
-  'id' | 'email' | 'fullname' | 'role' | 
-   'createdAt' | 'updatedAt' | 'deletedAt'> {
-  generatedPassword: string
+export interface IUtilisateurAddUpdateResponse
+  extends Pick<
+    IUtilisateur,
+    | "id"
+    | "email"
+    | "fullname"
+    | "role"
+    | "createdAt"
+    | "updatedAt"
+    | "deletedAt"
+  > {
+  generatedPassword: string;
 }
 
 export interface IUtilisateurDeleteResponse {
-  success: true,
-  message: string,
-};
+  success: true;
+  message: string;
+}

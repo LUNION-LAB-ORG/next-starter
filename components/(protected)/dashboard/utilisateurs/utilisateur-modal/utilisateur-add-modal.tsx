@@ -56,10 +56,14 @@ export function UtilisateurAddModal({ isOpen, setIsOpen }: Props) {
 
   const onSubmit = useCallback(
     async (formdata: UtilisateurAddDTO) => {
-      await ajouterUtilisateurMutation({ data: formdata });
+      const user = await ajouterUtilisateurMutation({ data: formdata });
+      prompt(
+        `Utilisateur créé avec succès!\n\nEmail: ${user.email}\nMot de passe: ${user.password}\n\nVeuillez noter le mot de passe avant de fermer cette fenêtre.`,
+        `Email: ${user.email}\nMot de passe: ${user.password}`,
+      );
       handleClose();
     },
-    [ajouterUtilisateurMutation, handleClose]
+    [ajouterUtilisateurMutation, handleClose],
   );
 
   const handleRoleChange = useCallback(
@@ -69,7 +73,7 @@ export function UtilisateurAddModal({ isOpen, setIsOpen }: Props) {
         shouldDirty: true,
       });
     },
-    [setValue]
+    [setValue],
   );
 
   return (
@@ -86,20 +90,11 @@ export function UtilisateurAddModal({ isOpen, setIsOpen }: Props) {
           </ModalHeader>
           <ModalBody>
             <Input
-              {...register("firstName")}
-              errorMessage={errors.firstName?.message}
-              isInvalid={!!errors.firstName}
+              {...register("fullname")}
+              errorMessage={errors.fullname?.message}
+              isInvalid={!!errors.fullname}
               disabled={isPending}
-              placeholder="Entrer le prénom"
-              variant="bordered"
-              type="text"
-            />
-            <Input
-              {...register("lastName")}
-              errorMessage={errors.lastName?.message}
-              isInvalid={!!errors.lastName}
-              disabled={isPending}
-              placeholder="Entrer le nom"
+              placeholder="Entrer le nom complet"
               variant="bordered"
               type="text"
             />
@@ -113,9 +108,9 @@ export function UtilisateurAddModal({ isOpen, setIsOpen }: Props) {
               type="email"
             />
             <Input
-              {...register("phoneNumber")}
-              errorMessage={errors.phoneNumber?.message}
-              isInvalid={!!errors.phoneNumber}
+              {...register("phone")}
+              errorMessage={errors.phone?.message}
+              isInvalid={!!errors.phone}
               disabled={isPending}
               placeholder="Entrer le téléphone"
               variant="bordered"
@@ -131,7 +126,9 @@ export function UtilisateurAddModal({ isOpen, setIsOpen }: Props) {
               variant="bordered"
             >
               {roleOptions.map((role) => (
-                <SelectItem key={role}>{getUtilisateurRole(role).label}</SelectItem>
+                <SelectItem key={role}>
+                  {getUtilisateurRole(role).label}
+                </SelectItem>
               ))}
             </Select>
           </ModalBody>

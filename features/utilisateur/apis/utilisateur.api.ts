@@ -38,14 +38,14 @@ export const utilisateurAPI: IUtilisateurAPI = {
     },
     modifierProfil(id: string, data: UtilisateurUpdateDTO): Promise<IUtilisateurAddUpdateResponse> {
         return api.request<IUtilisateurAddUpdateResponse>({
-            endpoint: `/users/${id}/profile`,
+            endpoint: `/users/${id}`,
             method: "PATCH",
             data,
         });
     },
     supprimerUtilisateur(id: string): Promise<IUtilisateurDeleteResponse> {
         return api.request<IUtilisateurDeleteResponse>({
-            endpoint: `/users/${id}`,
+            endpoint: `/users/delete/${id}`,
             method: "DELETE",
         });
     },

@@ -98,7 +98,6 @@ export function UtilisateurList() {
         </Table>
       </div>
 
-      {/* Modales - décommentez quand prêtes */}
       <UtilisateurAddModal
         isOpen={modalStates.addOpen}
         setIsOpen={modalHandlers.setAddOpen}

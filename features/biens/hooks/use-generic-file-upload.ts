@@ -1,4 +1,4 @@
-import { useFileUpload } from "@/hooks/use-file-upload";
+import { FileMetadata, useFileUpload } from "@/hooks/use-file-upload";
 
 export function useGenericFileUpload({
   multiple,
@@ -11,7 +11,7 @@ export function useGenericFileUpload({
   maxFiles: number;
   maxSize: number;
   accept: string;
-  initialFiles?: File[];
+  initialFiles?: (File | FileMetadata)[];
 }) {
   const [
     { files, isDragging, errors },
@@ -24,6 +24,7 @@ export function useGenericFileUpload({
       removeFile,
       clearFiles,
       getInputProps,
+      setFiles,
     },
   ] = useFileUpload({
     multiple,
@@ -45,5 +46,6 @@ export function useGenericFileUpload({
     removeFile,
     clearFiles,
     getInputProps,
+    setFiles,
   };
 }

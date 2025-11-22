@@ -41,6 +41,7 @@ export interface IPropertyMedia {
   height?: number;
   createdAt: Date;
   url: string;
+  sizeBytes?: number;
 }
 
 export interface IBien {

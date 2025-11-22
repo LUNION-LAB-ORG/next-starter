@@ -11,38 +11,29 @@ import { useInvalidateBiensQuery } from "./index.query";
 export const useModifierBienMutation = () => {
   const invalidateBienQuery = useInvalidateBiensQuery();
   return useMutation({
-    mutationFn: async ({
-      id,
-      data,
-    }: {
-      id: string;
-      data: BienUpdateDTO;
-    }) => {
-      // Validation des données
-      const validation = processAndValidateFormData(
-        BienUpdateSchema,
-        data,
-        {
-          // For updates we need to support file uploads (images). Produce FormData so files are sent.
-          outputFormat: "formData",
-        }
-      );
+    mutationFn: async ({ id, data }: { id: string; data: BienUpdateDTO }) => {
+      // Supprimer les images qui ne sont pas de type File
+      data.images?.filter((img) => img instanceof File);
+      data.video = data.video instanceof File ? data.video : undefined;
+
+      console.log("Modifier bien data:", data);
+
+      const validation = processAndValidateFormData(BienUpdateSchema, data, {
+        outputFormat: "formData",
+      });
+
       if (!validation.success) {
         throw new Error(
           validation.errorsInString ||
-            "Une erreur est survenue lors de la validation des données."
+            "Une erreur est survenue lors de la validation des données.",
         );
       }
 
-      // Ensure data is properly passed as FormData
-      const result = await modifierBiensAction(
-        id,
-        validation.data
-      );
+      const result = await modifierBiensAction(id, validation.data);
 
       if (!result.success) {
         throw new Error(
-          result.error || "Erreur lors de la modification du bien"
+          result.error || "Erreur lors de la modification du bien",
         );
       }
 

@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { FileMetadata } from "@/hooks/use-file-upload";
 
 export const ListingTypeEnum = z.enum(["SALE", "RENT"]);
 export const CurrencyEnum = z.enum(["XOF", "USD", "EUR"]);
@@ -15,7 +16,6 @@ const numericField = z
   .refine((val) => !isNaN(Number(val)) && Number(val) >= 0, {
     message: "Doit être un nombre valide supérieur ou égal à 0",
   })
-  // .transform((val) => Number(val))
   .optional();
 
 export const BiensAddSchema = z.object({
@@ -80,13 +80,19 @@ export const BiensAddSchema = z.object({
     )
     .default([]),
 
-  images: z.array(z.instanceof(File)).min(1, "Au moins une image est requise"),
-  video: z.instanceof(File).optional(),
-  coverImage: z.instanceof(File, {
+  images: z.array(z.union([z.instanceof(File), z.custom<FileMetadata>()]), {
+    error: "Au moins une image est requise",
+  }),
+  video: z.union([z.instanceof(File), z.custom<FileMetadata>()]).optional(),
+  coverImage: z.union([z.instanceof(File), z.custom<FileMetadata>()], {
     error: "L'image de couverture est requise",
   }),
 });
-export const BienUpdateSchema = BiensAddSchema.partial();
+export const BienUpdateSchema = BiensAddSchema
+  .partial()
+  .extend({
+    deletedImageIds: z.array(z.string()).optional(),
+  });
 
 export type BienAddDTO = z.input<typeof BiensAddSchema>;
 export type BienUpdateDTO = z.infer<typeof BienUpdateSchema>;

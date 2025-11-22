@@ -34,27 +34,31 @@ import {
   BienUpdateDTO,
   BienUpdateSchema,
 } from "@/features/biens/schema/biens.schema";
-import { toast } from "sonner";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import CommoditeCombobox from "@/components/(protected)/dashboard/biens/commodite-combobox";
-import AddButton from "@/components/(protected)/dashboard/biens/add-button";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useModifierBienMutation } from "@/features/biens/queries/biens-update.mutation";
 import { useBienDetailsQuery } from "@/features/biens/queries/biens-detail.query";
-import { SelectWithAddButton } from "@/components/(protected)/dashboard/biens/forms/select-with-add-buttons";
 import VilleAddSelect from "@/components/(protected)/dashboard/biens/forms/modals/ville/ville-add-select";
 import CategorieAddSelect from "@/components/(protected)/dashboard/biens/forms/modals/categorie/categorie-add-select";
+import { useGenericFileUpload } from "@/features/biens/hooks/use-generic-file-upload";
+import { notFound, useRouter } from "next/navigation";
 
 // TODO: Fusionner avec BienCreateForm en un seul composant avec des props pour mode create/update
-
 export function BienUpdateForm({ bienId }: { bienId: string }) {
+  const router = useRouter();
+
   const {
     data: bienToUpdate,
     isLoading: bienLoading,
     isError: bienError,
   } = useBienDetailsQuery(bienId);
+
+  if (bienError && !bienLoading) {
+    notFound();
+  }
 
   if (bienError) {
     return (
@@ -111,13 +115,9 @@ export function BienUpdateForm({ bienId }: { bienId: string }) {
     categoryInput,
     amenities,
     amenitiesLoading,
-  } = useBienForm({ form });
+  } = useBienForm({ form, bien: bienToUpdate });
 
-  const {
-    data: villes,
-    isLoading: villesLoading,
-    villesCreateMutation,
-  } = villeInput;
+  const { data: villes, isLoading: villesLoading } = villeInput;
   const {
     data: categories,
     isLoading: categoriesLoading,
@@ -128,11 +128,11 @@ export function BienUpdateForm({ bienId }: { bienId: string }) {
     useModifierBienMutation();
 
   async function onSubmit(values: BienUpdateDTO) {
-    toast.promise(bienUpdateMutation({ id: bienId, data: values }), {
-      loading: "Ajout du bien immobilier en cours...",
-      success: "Bien immobilier ajouté avec succès !",
-      error: "Une erreur est survenue lors de l'ajout du bien immobilier.",
-    });
+    const bienUpdated = await bienUpdateMutation({ id: bienId, data: values });
+    if (bienUpdated) {
+      router.refresh();
+      router.push("/dashboard/biens");
+    }
   }
 
   useEffect(() => {
@@ -197,6 +197,36 @@ export function BienUpdateForm({ bienId }: { bienId: string }) {
       coverImage: undefined,
     });
   }, [bienToUpdate, form, categoriesLoading, villesLoading, amenitiesLoading]);
+
+  const handleRemoveFiles = (
+    ids: string | string[],
+    upload: ReturnType<typeof useGenericFileUpload>,
+    field: { onChange: (files: any[]) => void },
+  ) => {
+    const idsArray = Array.isArray(ids) ? ids : [ids];
+
+    idsArray.forEach((id) => {
+      if (!id) return;
+
+      upload.removeFile(id);
+
+      const currentDeletedIds = form.getValues("deletedImageIds") || [];
+      form.setValue("deletedImageIds", [...currentDeletedIds, id]);
+    });
+
+    field.onChange(upload.files.filter((f) => !idsArray.includes(f.id)));
+  };
+
+  if (!bienToUpdate || bienLoading) {
+    return (
+      <Content>
+        <div className="text-center py-20">
+          <Loader className="mx-auto mb-4 animate-spin" />
+          <p className="text-muted-foreground">Chargement du bien...</p>
+        </div>
+      </Content>
+    );
+  }
 
   return (
     <Content>
@@ -647,14 +677,15 @@ export function BienUpdateForm({ bienId }: { bienId: string }) {
                         isDragging={coverUpload.isDragging}
                         errors={coverUpload.errors}
                         removeFile={(id) => {
-                          coverUpload.removeFile(id);
-                          field.onChange(
-                            coverUpload.files.filter((f) => f.id !== id),
-                          );
+                          handleRemoveFiles(id, coverUpload, field);
                         }}
                         clearFiles={() => {
                           coverUpload.clearFiles();
-                          field.onChange([]);
+                          handleRemoveFiles(
+                            coverUpload.files.map((f) => f.id),
+                            coverUpload,
+                            field,
+                          );
                         }}
                         getInputProps={() => ({
                           ...coverUpload.getInputProps(),
@@ -691,14 +722,15 @@ export function BienUpdateForm({ bienId }: { bienId: string }) {
                         isDragging={videosUpload.isDragging}
                         errors={videosUpload.errors}
                         removeFile={(id) => {
-                          videosUpload.removeFile(id);
-                          field.onChange(
-                            videosUpload.files.filter((f) => f.id !== id),
-                          );
+                          handleRemoveFiles(id, videosUpload, field);
                         }}
                         clearFiles={() => {
                           videosUpload.clearFiles();
-                          field.onChange([]);
+                          handleRemoveFiles(
+                            videosUpload.files.map((f) => f.id),
+                            videosUpload,
+                            field,
+                          );
                         }}
                         getInputProps={() => ({
                           ...videosUpload.getInputProps(),
@@ -735,14 +767,15 @@ export function BienUpdateForm({ bienId }: { bienId: string }) {
                         isDragging={imagesUpload.isDragging}
                         errors={imagesUpload.errors}
                         removeFile={(id) => {
-                          imagesUpload.removeFile(id);
-                          field.onChange(
-                            imagesUpload.files.filter((f) => f.id !== id),
-                          );
+                          handleRemoveFiles(id, imagesUpload, field);
                         }}
                         clearFiles={() => {
                           imagesUpload.clearFiles();
-                          field.onChange([]);
+                          handleRemoveFiles(
+                            imagesUpload.files.map((f) => f.id),
+                            imagesUpload,
+                            field,
+                          );
                         }}
                         getInputProps={() => ({
                           ...imagesUpload.getInputProps(),

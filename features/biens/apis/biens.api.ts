@@ -69,6 +69,7 @@ export const biensAPI: IBiensAPI = {
         // Make sure data is sent as FormData if it isn't already
         transformRequest: [
           (data) => {
+            console.log("Transforming request data for modifierBiens:", data);
             if (data instanceof FormData) return data;
 
             const formData = new FormData();

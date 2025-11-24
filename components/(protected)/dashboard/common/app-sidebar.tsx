@@ -4,7 +4,6 @@ import * as React from "react";
 
 import { NavMain } from "@/components/(protected)/dashboard/common/nav-main";
 import { NavUser } from "@/components/(protected)/dashboard/common/nav-user";
-import { Logo } from "@/components/icons";
 import {
   Sidebar,
   SidebarContent,
@@ -28,7 +27,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               className="data-[slot=sidebar-menu-button]:!p-1.5"
             >
               <a href="#">
-                <Logo />
+                {/*<Logo />*/}
                 <span className="text-base font-semibold">
                   {siteConfig.name}
                 </span>
@@ -39,7 +38,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
-      
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={data.user} />

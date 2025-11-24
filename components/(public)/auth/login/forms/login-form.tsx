@@ -35,7 +35,7 @@ const LoginForm = () => {
   } = useForm<LoginDTO>({
     resolver: zodResolver(loginSchema),
     mode: "all",
-    defaultValues: { email: "admin@agence.ci", password: "password" },
+    defaultValues: { email: "", password: "" },
   });
 
   const onSubmit = async (data: LoginDTO) => {

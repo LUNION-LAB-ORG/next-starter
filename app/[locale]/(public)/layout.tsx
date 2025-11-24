@@ -1,8 +1,4 @@
 import "@/styles/globals.css";
-
-import { Navbar } from "@/components/common/navbar";
-
-import { Footer } from "@/components/common/footer";
 import Main from "@/components/primitives/Main";
 
 export default async function PublicLayout({
@@ -12,9 +8,9 @@ export default async function PublicLayout({
 }) {
   return (
     <Main>
-      <Navbar />
+      {/*<Navbar />*/}
       {children}
-      <Footer />
+      {/*<Footer />*/}
     </Main>
   );
 }

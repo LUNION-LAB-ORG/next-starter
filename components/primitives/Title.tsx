@@ -60,7 +60,7 @@ export default function Title({
   level = 1,
   ...props
 }: TitleProps) {
-  const Tag = `h${level}` as keyof JSX.IntrinsicElements;
+  const Tag = `h${level}` as keyof React.JSX.IntrinsicElements;
 
   return React.createElement(
     Tag,

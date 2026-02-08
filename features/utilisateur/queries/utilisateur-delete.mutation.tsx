@@ -5,9 +5,7 @@ import {
     useMutation,
 } from '@tanstack/react-query';
 import { CheckCircle2, X } from "lucide-react";
-import {
-    supprimerUtilisateurAction
-} from '../actions/utilisateur.action';
+import { utilisateurAPI } from "../apis/utilisateur.api";
 import { useInvalidateUtilisateurQuery } from './index.query';
 
 export const useSupprimerUtilisateurMutation = () => {
@@ -17,11 +15,8 @@ export const useSupprimerUtilisateurMutation = () => {
             if (!id) {
                 throw new Error("L'identifiant de l'utilisateur est requis.");
             }
-            const result = await supprimerUtilisateurAction(id)
-            if (!result.success) {
-                throw new Error(result.error || "Erreur lors de la suppression de l'utilisateur");
-            }
-            return result.data!;
+            const result = await utilisateurAPI.supprimerUtilisateur(id)
+            return result;
         },
         onSuccess: async () => {
             addToast({
@@ -32,7 +27,7 @@ export const useSupprimerUtilisateurMutation = () => {
                 color: "success",
             });
         },
-        onError: async (error) => {
+        onError: async (error:Error) => {
             addToast({
                 title: "Erreur suppression utilisateur:",
                 description: error.message,

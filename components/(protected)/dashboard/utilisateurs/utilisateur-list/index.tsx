@@ -1,7 +1,6 @@
 "use client";
 
-import Content from "@/components/primitives/Content";
-import { useUtilisateurListTable } from "@/features/utilisateur/hooks/useUtilisateurListTable";
+import { IUtilisateur } from "@/features/utilisateur/types/utilisateur.type";
 import {
   Pagination,
   Table,
@@ -11,36 +10,12 @@ import {
   TableHeader,
   TableRow,
 } from "@heroui/react";
-import { flexRender } from "@tanstack/react-table";
-import { UtilisateurAddModal } from "../utilisateur-modal/utilisateur-add-modal";
-import { UtilisateurDeleteModal } from "../utilisateur-modal/utilisateur-delete-modal";
-import { UtilisateurUpdateModal } from "../utilisateur-modal/utilisateur-update-modal";
-import { columns } from "./column";
-import { HeaderFilter } from "./header-filter";
+import { flexRender, Table as ReactTable } from "@tanstack/react-table";
 
-export function UtilisateurList() {
-  const {
-    table,
-    isLoading,
-    isError,
-    isFetching,
-    handleTextFilterChange,
-    handleEnumFilterChange,
-    modalStates,
-    modalHandlers,
-    currentUser,
-    filters,
-  } = useUtilisateurListTable({ columns });
+export function UtilisateurList({table, isLoading, isError, isFetching}: {table: ReactTable<IUtilisateur>, isLoading: boolean, isError: boolean, isFetching: boolean}) {
 
   return (
-    <Content>
-      <HeaderFilter
-        handleTextFilterChange={handleTextFilterChange}
-        handleEnumFilterChange={handleEnumFilterChange}
-        filters={filters}
-        modalHandlers={modalHandlers}
-      />
-      <div className="relative">
+    <div className="relative">
         <Table
           classNames={{
             wrapper: isFetching
@@ -97,27 +72,5 @@ export function UtilisateurList() {
           </TableBody>
         </Table>
       </div>
-
-      {/* Modales - décommentez quand prêtes */}
-      <UtilisateurAddModal
-        isOpen={modalStates.addOpen}
-        setIsOpen={modalHandlers.setAddOpen}
-      />
-
-      {currentUser && (
-        <>
-          <UtilisateurUpdateModal
-            isOpen={modalStates.editOpen}
-            setIsOpen={modalHandlers.setEditOpen}
-            utilisateur={currentUser}
-          />
-          <UtilisateurDeleteModal
-            isOpen={modalStates.deleteOpen}
-            setIsOpen={modalHandlers.setDeleteOpen}
-            utilisateur={currentUser}
-          />
-        </>
-      )}
-    </Content>
   );
 }

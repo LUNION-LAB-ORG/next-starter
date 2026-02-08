@@ -1,7 +1,7 @@
 import { useQueryClient } from '@tanstack/react-query';
 
 // 1- Clé de cache
-export const utilisateurKeyQuery = (...params: any[]) => {
+export const utilisateurKeyQuery = (...params: unknown[]) => {
     if (params.length === 0) {
         return ['utilisateur'];
     }
@@ -12,7 +12,7 @@ export const utilisateurKeyQuery = (...params: any[]) => {
 export const useInvalidateUtilisateurQuery = () => {
     const queryClient = useQueryClient();
 
-    return async (...params: any[]) => {
+    return async (...params: unknown[]) => {
         await queryClient.invalidateQueries({
             queryKey: utilisateurKeyQuery(...params),
             exact: false

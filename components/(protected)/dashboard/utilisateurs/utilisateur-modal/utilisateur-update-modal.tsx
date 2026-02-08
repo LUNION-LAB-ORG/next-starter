@@ -10,7 +10,7 @@ import {
   Select,
   SelectItem,
 } from "@heroui/react";
-import { useEffect, useCallback, useMemo } from "react";
+import { useEffect, useCallback, useMemo, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -36,10 +36,11 @@ export function UtilisateurUpdateModal({
   setIsOpen,
   utilisateur,
 }: Props) {
-  const { mutateAsync: modifierProfilMutation, isPending } =
+  const { mutateAsync, isPending } =
     useModifierProfilMutation();
 
   const roleOptions = useMemo(() => getEnumValues(UtilisateurRole), []);
+  const modalRef = useRef<HTMLDivElement>(null);
 
   const {
     setValue,
@@ -61,10 +62,10 @@ export function UtilisateurUpdateModal({
 
   const onSubmit = useCallback(
     async (data: UtilisateurRoleDTO) => {
-      await modifierProfilMutation({ id: utilisateur?.id || "", data });
+      await mutateAsync({ id: utilisateur?.id || "", data });
       handleClose();
     },
-    [modifierProfilMutation, handleClose, utilisateur]
+    [mutateAsync, handleClose, utilisateur]
   );
 
   useEffect(() => {
@@ -86,9 +87,8 @@ export function UtilisateurUpdateModal({
     },
     [setValue]
   );
-
   return (
-    <Modal isOpen={isOpen} onOpenChange={setIsOpen}>
+    <Modal ref={modalRef} className="overflow-visible" isOpen={isOpen} onOpenChange={setIsOpen}>
       <ModalContent>
         <form onSubmit={handleSubmit(onSubmit)}>
           <ModalHeader className="flex flex-col gap-1">
@@ -102,13 +102,21 @@ export function UtilisateurUpdateModal({
 
           <ModalBody>
             <Select
-              selectedKeys={[watch("role")?.toString() || ""]}
-              onChange={(e) => handleRoleChange(e.target.value)}
+              popoverProps={{
+                portalContainer: modalRef.current ?? undefined,
+                shouldCloseOnScroll: false,
+              }}
+              defaultSelectedKeys={
+                utilisateur?.role ? [utilisateur.role] : []
+              }
+              onSelectionChange={(keys) => {
+                const value = Array.from(keys)[0] as string;
+                handleRoleChange(value);
+              }}
+              placeholder="Choisir un rôle"
               errorMessage={errors.role?.message}
               isInvalid={!!errors.role}
               disabled={isPending}
-              placeholder="Choisir un rôle"
-              variant="bordered"
             >
               {roleOptions.map((role) => (
                 <SelectItem key={role}>{getUtilisateurRole(role).label}</SelectItem>

@@ -23,7 +23,7 @@ export function UtilisateurDeleteModal({
   setIsOpen,
   utilisateur,
 }: Props) {
-  const { mutateAsync: supprimerUtilisateurMutation, isPending } =
+  const { mutateAsync, isPending } =
     useSupprimerUtilisateurMutation();
 
   const handleClose = useCallback(() => {
@@ -33,9 +33,9 @@ export function UtilisateurDeleteModal({
   }, [isPending, setIsOpen]);
 
   const handleDelete = useCallback(async () => {
-    await supprimerUtilisateurMutation({ id: utilisateur?.id || "" });
+    await mutateAsync({ id: utilisateur?.id || "" });
     handleClose();
-  }, [supprimerUtilisateurMutation, handleClose, utilisateur]);
+  }, [mutateAsync, handleClose, utilisateur]);
 
   return (
     <Modal isOpen={isOpen} onOpenChange={setIsOpen}>

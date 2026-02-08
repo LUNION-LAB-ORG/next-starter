@@ -1,16 +1,19 @@
-import { Button } from "@heroui/button";
-import { Input } from "@heroui/input";
-import { Kbd } from "@heroui/kbd";
-import { Link } from "@heroui/link";
+"use client";
+
 import {
+  Button,
   Navbar as HeroUINavbar,
+  Input,
+  Kbd,
+  Link,
   NavbarBrand,
   NavbarContent,
   NavbarItem,
   NavbarMenu,
   NavbarMenuItem,
   NavbarMenuToggle,
-} from "@heroui/navbar";
+} from "@heroui/react";
+
 import { link as linkStyles } from "@heroui/theme";
 import clsx from "clsx";
 import NextLink from "next/link";
@@ -22,16 +25,16 @@ import {
 } from "@/components/icons";
 import { ThemeSwitch } from "@/components/theme-switch";
 import { siteConfig } from "@/config/site";
-import { logout } from "@/features/auth/actions/auth.action";
-import { auth } from "@/lib/auth";
+import { signOut } from "@/lib/auth";
 import { LogInIcon, LogOutIcon } from "lucide-react";
-import { getTranslations } from "next-intl/server";
+import { useSession } from "next-auth/react";
+import { useTranslations } from "next-intl";
 import LocaleSwitcher from "../locale-switch";
 
-export const Navbar = async () => {
-  const t = await getTranslations("partials.navbar");
-  const tConfig = await getTranslations("config");
-  const session = await auth();
+export const Navbar = () => {
+  const t = useTranslations("partials.navbar");
+  const tConfig = useTranslations("config");
+  const {data: session} = useSession();
   const isLoggedIn = !!session;
 
   const searchInput = (
@@ -98,7 +101,7 @@ export const Navbar = async () => {
           {isLoggedIn ? (
             <Button
               color="danger"
-              onPress={logout}
+              onPress={async ()=>await signOut()}
               startContent={<LogOutIcon />}
             >
               {t("buttons.logout")}
@@ -145,7 +148,7 @@ export const Navbar = async () => {
             {isLoggedIn ? (
               <Button
                 color="danger"
-                onPress={logout}
+                onPress={async ()=>await signOut()}
                 startContent={<LogOutIcon />}
                 fullWidth
               >

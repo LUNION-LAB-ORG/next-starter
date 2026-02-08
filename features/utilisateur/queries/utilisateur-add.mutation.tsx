@@ -6,9 +6,7 @@ import {
 } from '@tanstack/react-query';
 import { processAndValidateFormData } from "ak-zod-form-kit";
 import { CheckCircle2, X } from "lucide-react";
-import {
-    ajouterUtilisateurAction
-} from '../actions/utilisateur.action';
+import { utilisateurAPI } from "../apis/utilisateur.api";
 import { UtilisateurAddDTO, UtilisateurAddSchema } from '../schema/utilisateur.schema';
 import { useInvalidateUtilisateurQuery } from './index.query';
 
@@ -34,13 +32,9 @@ export const useAjouterUtilisateurMutation = () => {
             }
 
             // Appel de l'API avec l'action
-            const result = await ajouterUtilisateurAction(validation.data as UtilisateurAddDTO);
+            const result = await utilisateurAPI.ajouterUtilisateur(validation.data as UtilisateurAddDTO);
 
-            if (!result.success) {
-                throw new Error(result.error || "Erreur lors de l'ajout de l'utilisateur");
-            }
-
-            return result.data!;
+            return result;
         },
         onSuccess: async () => {
             addToast({
@@ -52,8 +46,7 @@ export const useAjouterUtilisateurMutation = () => {
             });
         },
 
-        onError: async (error) => {
-            console.log("error query", error)
+        onError: async (error:Error) => {
             addToast({
                 title: "Erreur lors de l'ajout de l'utilisateur:",
                 description: error.message,

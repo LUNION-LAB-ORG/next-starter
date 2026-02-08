@@ -19,8 +19,9 @@ import {
   SelectItem,
 } from "@heroui/react";
 import { Search, UserPlus, X } from "lucide-react";
+import { useMemo } from "react";
 
-export function HeaderFilter({
+export function UtilisateurHeaderFilter({
   handleTextFilterChange,
   handleEnumFilterChange,
   modalHandlers,
@@ -43,6 +44,7 @@ export function HeaderFilter({
     handleEnumFilterChange("status", "");
     handleEnumFilterChange("role", "");
   };
+  const roleOptions = useMemo(() => getEnumValues(UtilisateurRole), []);
 
   return (
     <div className="w-full mb-6">
@@ -128,10 +130,8 @@ export function HeaderFilter({
                   }}
                   variant="bordered"
                 >
-                  {getEnumValues(UtilisateurRole).map((role) => (
-                    <SelectItem key={role}>
-                      {getUtilisateurRole(role).label}
-                    </SelectItem>
+                  {roleOptions.map((role) => (
+                    <SelectItem key={role}>{getUtilisateurRole(role).label}</SelectItem>
                   ))}
                 </Select>
               </div>

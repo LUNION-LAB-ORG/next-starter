@@ -5,11 +5,11 @@ import {
     useReactTable,
     getCoreRowModel,
     getSortedRowModel,
-    ColumnDef,
+    ColumnDef
 } from "@tanstack/react-table";
 import { useQueryStates } from 'nuqs';
 import { utilisateurFiltersClient } from '../filters/utilisateur.filters';
-import { useUtilisateursListQuery } from "../queries/utilisateur-list.query";
+import { useUtilisateursListQuery } from "../queries/utilisateur.query";
 import { IUtilisateur, IUtilisateursParams } from "../types/utilisateur.type";
 
 export interface IUtilisateurListTableProps {

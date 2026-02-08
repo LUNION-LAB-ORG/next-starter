@@ -4,7 +4,7 @@ import { addToast } from "@heroui/toast";
 import { useMutation } from "@tanstack/react-query";
 import { processAndValidateFormData } from "ak-zod-form-kit";
 import { CheckCircle2, X } from "lucide-react";
-import { modifierProfilAction } from "../actions/utilisateur.action";
+import { utilisateurAPI } from "../apis/utilisateur.api";
 import {
   UtilisateurUpdateDTO,
   UtilisateurUpdateSchema,
@@ -36,18 +36,12 @@ export const useModifierProfilMutation = () => {
         );
       }
 
-      const result = await modifierProfilAction(
+      const result = await utilisateurAPI.modifierProfil(
         id,
         validation.data as UtilisateurUpdateDTO
       );
 
-      if (!result.success) {
-        throw new Error(
-          result.error || "Erreur lors de la modification de l'utilisateur"
-        );
-      }
-
-      return result.data!;
+      return result;
     },
     onSuccess: async () => {
       addToast({
@@ -58,7 +52,7 @@ export const useModifierProfilMutation = () => {
         color: "success",
       });
     },
-    onError: async (error) => {
+    onError: async (error:Error) => {
       addToast({
         title: "Erreur modification utilisateur:",
         description: error.message,

@@ -12,7 +12,7 @@ import { getUtilisateurRole } from "@/features/utilisateur/utils/getUtilisateurR
 import { getUtilisateurStatus } from "@/features/utilisateur/utils/getUtilisateurStatus";
 import { Button, Chip, Tooltip, User } from "@heroui/react";
 
-export const columns: ColumnDef<IUtilisateur>[] = [
+export const utilisateurTableColumns: ColumnDef<IUtilisateur>[] = [
   {
     accessorKey: "firstName",
     header: "Nom Complet",

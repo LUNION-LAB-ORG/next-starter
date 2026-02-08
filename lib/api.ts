@@ -1,8 +1,7 @@
-import { Api } from "ak-api-http";
 import { baseURL } from "@/config/api";
-import { logout } from "@/features/auth/actions/auth.action";
-import { auth } from "./auth";
+import { Api } from "ak-api-http";
 import { User } from "next-auth";
+import { auth, signOut } from "./auth";
 
 export const api = new Api({
   baseUrl: baseURL, // Base URL de l'API
@@ -27,7 +26,7 @@ export const api = new Api({
     }
   },// Récupération du token
   signOut: async () => {
-    await logout()
+    await signOut()
   }, // Déconnexion automatique si la requête échoue avec un code 401
   debug: true, // Debug activé en mode développement
 });
